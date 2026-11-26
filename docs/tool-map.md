@@ -11,3 +11,4 @@
 | 7. Controversy | QA checklist (next) | none | rules in the bible |
 | Assembly | oldbrain/assemble.py | moviepy | working: MP4, whip, handprint portal, captions |
 | Audio | oldbrain/voice.py | pedalboard, ffmpeg-normalize | written: presets, crowd, master; needs her takes |
+| QA gate | oldbrain/qa.py | iart-tiktok-skills | working: Prophet demo passes 5 of 6; fails loop seam (demo doesn't loop yet) |

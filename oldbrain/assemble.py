@@ -33,7 +33,7 @@ def handprint_portal(a: Image.Image, b: Image.Image, hand: Image.Image, frames: 
         mask = Image.new("L", SIZE, 0); mask.paste(hm, ((W - hm.width) // 2, (H - hm.height) // 2))
         yield Image.composite(b, a, mask)
 
-def caption(frame: Image.Image, text: str, y: int = 170, size: int = 62, max_w: int = 940) -> Image.Image:
+def caption(frame: Image.Image, text: str, y: int = 270, size: int = 60, max_w: int = 880) -> Image.Image:
     """Burned-in subtitle in the top safe zone (Shorts UI covers the bottom ~20%).
     Wraps to the frame and never crosses the figure. Stone Age lines are gibberish;
     the subtitle is the joke."""

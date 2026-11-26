@@ -24,7 +24,7 @@ def scene(name, move, dur, vx=0.0, x=None):
 
 lines = [("THE SKY HAS CHOSEN ME.", scene("preach", push_in(0.12), 2.6)),
          ("...wait. Why is it getting BIGGER?", scene("shocked", shake(26), 1.8)),
-         ("*leaves to 'prepare a sermon'*", scene("walk-side", pull_back(0.10), 2.4, vx=260, x=200))]
+         ("(leaves to 'prepare a sermon')", scene("walk-side", pull_back(0.10), 2.4, vx=260, x=200))]
 frames = []
 for i, (text, shot) in enumerate(lines):
     fs = [caption(f, text) for f in shot_frames(shot)]
