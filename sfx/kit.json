@@ -1,0 +1,2306 @@
+[
+ {
+  "file": "kit/crack/01_bfh1_hit_02.wav",
+  "category": "crack",
+  "seconds": 0.5,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/02_bfh1_wood_breaking_04.wav",
+  "category": "crack",
+  "seconds": 0.24,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/03_bfh1_rock_falling_02.wav",
+  "category": "crack",
+  "seconds": 0.31,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/04_break_stone.wav",
+  "category": "crack",
+  "seconds": 1.24,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/05_bfh1_rock_breaking_02.wav",
+  "category": "crack",
+  "seconds": 0.85,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/06_bfh1_misc_04.wav",
+  "category": "crack",
+  "seconds": 0.25,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/07_clang_glass.wav",
+  "category": "crack",
+  "seconds": 0.33,
+  "source": "https://opengameart.org/content/various-sound-effects",
+  "author": "laleksic",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/08_fire_1.wav",
+  "category": "crack",
+  "seconds": 2.87,
+  "source": "https://opengameart.org/content/fire-crackling",
+  "author": "antumdeluge",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/09_sfx100v2_glass_03.wav",
+  "category": "crack",
+  "seconds": 0.37,
+  "source": "https://opengameart.org/content/100-cc0-sfx-2",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/10_wood_cracking_04.wav",
+  "category": "crack",
+  "seconds": 0.18,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/11_audio_glass_003.wav",
+  "category": "crack",
+  "seconds": 0.11,
+  "source": "https://opengameart.org/content/interface-sounds",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/12_fire_1_0.wav",
+  "category": "crack",
+  "seconds": 3.59,
+  "source": "https://opengameart.org/content/fire-crackling",
+  "author": "antumdeluge",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/13_glass_04.wav",
+  "category": "crack",
+  "seconds": 0.37,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/14_audio_glass_006.wav",
+  "category": "crack",
+  "seconds": 0.1,
+  "source": "https://opengameart.org/content/interface-sounds",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/15_snd_bulletcrackle.wav",
+  "category": "crack",
+  "seconds": 0.17,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/16_audio_glass_001.wav",
+  "category": "crack",
+  "seconds": 0.22,
+  "source": "https://opengameart.org/content/interface-sounds",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/17_sfx100v2_glass_01.wav",
+  "category": "crack",
+  "seconds": 0.16,
+  "source": "https://opengameart.org/content/100-cc0-sfx-2",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/18_wood_breaking_01.wav",
+  "category": "crack",
+  "seconds": 0.41,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/19_audio_glass_002.wav",
+  "category": "crack",
+  "seconds": 0.11,
+  "source": "https://opengameart.org/content/interface-sounds",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/20_spoon_on_glass_01.wav",
+  "category": "crack",
+  "seconds": 2.02,
+  "source": "https://opengameart.org/content/58-random-sound-effects",
+  "author": "tokyogeisha",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/21_sfx100v2_glass_05.wav",
+  "category": "crack",
+  "seconds": 0.46,
+  "source": "https://opengameart.org/content/100-cc0-sfx-2",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/22_wood_cracking_03.wav",
+  "category": "crack",
+  "seconds": 0.17,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/23_wood_cracking_02.wav",
+  "category": "crack",
+  "seconds": 0.17,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/24_sfx100v2_glass_04.wav",
+  "category": "crack",
+  "seconds": 0.14,
+  "source": "https://opengameart.org/content/100-cc0-sfx-2",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/25_sfx100v2_glass_06.wav",
+  "category": "crack",
+  "seconds": 0.32,
+  "source": "https://opengameart.org/content/100-cc0-sfx-2",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/26_glass_02.wav",
+  "category": "crack",
+  "seconds": 0.32,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/27_audio_glass_005.wav",
+  "category": "crack",
+  "seconds": 0.1,
+  "source": "https://opengameart.org/content/interface-sounds",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/28_glass_01.wav",
+  "category": "crack",
+  "seconds": 0.32,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/29_glass_05.wav",
+  "category": "crack",
+  "seconds": 0.28,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crack/30_glass_03.wav",
+  "category": "crack",
+  "seconds": 0.29,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/01_audio_drop_002.wav",
+  "category": "fall",
+  "seconds": 0.11,
+  "source": "https://opengameart.org/content/interface-sounds",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/02_jumpland48000.wav",
+  "category": "fall",
+  "seconds": 0.33,
+  "source": "https://opengameart.org/content/jump-landing-sound",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/03_wood_falling_01.wav",
+  "category": "fall",
+  "seconds": 0.53,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/04_audio_drop_004.wav",
+  "category": "fall",
+  "seconds": 0.14,
+  "source": "https://opengameart.org/content/interface-sounds",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/05_metal_falling_02.wav",
+  "category": "fall",
+  "seconds": 0.75,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/06_wood_falling_04.wav",
+  "category": "fall",
+  "seconds": 0.29,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/07_wood_falling_05.wav",
+  "category": "fall",
+  "seconds": 0.6,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/08_bfh1_falling_04.wav",
+  "category": "fall",
+  "seconds": 1.19,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/09_bfh1_breaking_03.wav",
+  "category": "fall",
+  "seconds": 0.38,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/10_jumpland.wav",
+  "category": "fall",
+  "seconds": 0.33,
+  "source": "https://opengameart.org/content/jump-landing-sound",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/11_bfh1_breaking_02.wav",
+  "category": "fall",
+  "seconds": 0.23,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/12_bfh1_metal_falling_01.wav",
+  "category": "fall",
+  "seconds": 0.77,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/13_bfh1_rock_falling_04.wav",
+  "category": "fall",
+  "seconds": 0.2,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/14_sound_as_h_fall.wav",
+  "category": "fall",
+  "seconds": 0.54,
+  "source": "https://opengameart.org/content/nhfea-sound",
+  "author": "roars-games",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/15_ogg_dropleather.wav",
+  "category": "fall",
+  "seconds": 0.31,
+  "source": "https://opengameart.org/content/50-rpg-sound-effects",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/16_wood_falling_06.wav",
+  "category": "fall",
+  "seconds": 0.5,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/17_chop_tree_fall_0.wav",
+  "category": "fall",
+  "seconds": 1.99,
+  "source": "https://opengameart.org/content/tree-chop-fall-thud",
+  "author": "kheetor",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/18_boulder_drop.wav",
+  "category": "fall",
+  "seconds": 0.65,
+  "source": "https://opengameart.org/content/moving-boulder",
+  "author": "themightyglider",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/19_boulder_drop_0.wav",
+  "category": "fall",
+  "seconds": 0.65,
+  "source": "https://opengameart.org/content/moving-boulder",
+  "author": "themightyglider",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/20_fall_0.wav",
+  "category": "fall",
+  "seconds": 1.49,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/21_audio_drop_001.wav",
+  "category": "fall",
+  "seconds": 0.09,
+  "source": "https://opengameart.org/content/interface-sounds",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/22_chop_tree_fall.wav",
+  "category": "fall",
+  "seconds": 1.99,
+  "source": "https://opengameart.org/content/tree-chop-fall-thud",
+  "author": "kheetor",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/23_audio_drop_003.wav",
+  "category": "fall",
+  "seconds": 0.12,
+  "source": "https://opengameart.org/content/interface-sounds",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/24_thud3.wav",
+  "category": "fall",
+  "seconds": 0.32,
+  "source": "https://opengameart.org/content/metal-impact-sounds",
+  "author": "bmaczero",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/25_jumpland44100.wav",
+  "category": "fall",
+  "seconds": 0.33,
+  "source": "https://opengameart.org/content/jump-landing-sound",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/26_thud2.wav",
+  "category": "fall",
+  "seconds": 0.42,
+  "source": "https://opengameart.org/content/metal-impact-sounds",
+  "author": "bmaczero",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/27_snd_enemyland.wav",
+  "category": "fall",
+  "seconds": 0.66,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fall/28_yd_sounds_landing.wav",
+  "category": "fall",
+  "seconds": 0.43,
+  "source": "https://opengameart.org/content/platformer-sounds-terminal-interaction-door-shots-bang-and-footsteps",
+  "author": "yd",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/01_017_16_bit_mini_pack_punch_wav_punch_003.wav",
+  "category": "impact",
+  "seconds": 0.29,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/02_7_16_bit_mini_pack_punch2_ogg_punch2_003.wav",
+  "category": "impact",
+  "seconds": 0.36,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/03_7_16_bit_mini_pack_punch2_ogg_punch2_001.wav",
+  "category": "impact",
+  "seconds": 0.38,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/04_7_16_bit_mini_pack_punch2_wav_punch2_008.wav",
+  "category": "impact",
+  "seconds": 0.37,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/05_qubodup_slomo1.wav",
+  "category": "impact",
+  "seconds": 0.88,
+  "source": "https://opengameart.org/content/wind-hit-time-morph",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/06_wood_hit_05.wav",
+  "category": "impact",
+  "seconds": 0.15,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/07_017_16_bit_mini_pack_punch_wav_punch_010.wav",
+  "category": "impact",
+  "seconds": 0.27,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/08_wood_hit_02.wav",
+  "category": "impact",
+  "seconds": 0.22,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/09_wood_hit_09.wav",
+  "category": "impact",
+  "seconds": 0.18,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/10_snd_ambient_impact1.wav",
+  "category": "impact",
+  "seconds": 0.52,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/11_bfh1_hit_09.wav",
+  "category": "impact",
+  "seconds": 0.15,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/12_60009_qubodup_swosh_22.wav",
+  "category": "impact",
+  "seconds": 0.3,
+  "source": "https://opengameart.org/content/wind-hit-time-morph",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/13_bfh1_misc_07.wav",
+  "category": "impact",
+  "seconds": 0.6,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/14_bfh1_breaking_01.wav",
+  "category": "impact",
+  "seconds": 1.02,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/15_sfx100v2_wood_hit_03.wav",
+  "category": "impact",
+  "seconds": 0.23,
+  "source": "https://opengameart.org/content/100-cc0-sfx-2",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/16_bfh1_glass_falling_03.wav",
+  "category": "impact",
+  "seconds": 0.49,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/17_bfh1_glass_hit_01.wav",
+  "category": "impact",
+  "seconds": 0.21,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/18_sfx100v2_wood_hit_01.wav",
+  "category": "impact",
+  "seconds": 0.24,
+  "source": "https://opengameart.org/content/100-cc0-sfx-2",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/19_qubodup_megaswosh2.wav",
+  "category": "impact",
+  "seconds": 0.52,
+  "source": "https://opengameart.org/content/wind-hit-time-morph",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/20_sfx100v2_hit_02.wav",
+  "category": "impact",
+  "seconds": 0.14,
+  "source": "https://opengameart.org/content/100-cc0-sfx-2",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/21_hit_03.wav",
+  "category": "impact",
+  "seconds": 0.24,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/22_wood_hit_04.wav",
+  "category": "impact",
+  "seconds": 0.24,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/23_qubodup_megaswosh1.wav",
+  "category": "impact",
+  "seconds": 0.49,
+  "source": "https://opengameart.org/content/wind-hit-time-morph",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/24_metal_hit_01.wav",
+  "category": "impact",
+  "seconds": 0.16,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/25_bing1.wav",
+  "category": "impact",
+  "seconds": 0.54,
+  "source": "https://opengameart.org/content/metal-impact-sounds",
+  "author": "bmaczero",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/26_sfx100v2_wood_hit_02.wav",
+  "category": "impact",
+  "seconds": 0.24,
+  "source": "https://opengameart.org/content/100-cc0-sfx-2",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/27_sfx100v2_metal_hit_02.wav",
+  "category": "impact",
+  "seconds": 0.13,
+  "source": "https://opengameart.org/content/100-cc0-sfx-2",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/28_hit_01.wav",
+  "category": "impact",
+  "seconds": 0.2,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/29_clink2.wav",
+  "category": "impact",
+  "seconds": 0.22,
+  "source": "https://opengameart.org/content/metal-impact-sounds",
+  "author": "bmaczero",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/30_snd_bullethit.wav",
+  "category": "impact",
+  "seconds": 0.17,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/31_small_rock_impact.wav",
+  "category": "impact",
+  "seconds": 0.11,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/32_clink1_0.wav",
+  "category": "impact",
+  "seconds": 0.22,
+  "source": "https://opengameart.org/content/metal-impact-sounds",
+  "author": "bmaczero",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/33_snd_splathit.wav",
+  "category": "impact",
+  "seconds": 0.41,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/34_hit_04.wav",
+  "category": "impact",
+  "seconds": 0.29,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/impact/35_clink3.wav",
+  "category": "impact",
+  "seconds": 0.24,
+  "source": "https://opengameart.org/content/metal-impact-sounds",
+  "author": "bmaczero",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/01_swishes_swish_4.wav",
+  "category": "whoosh",
+  "seconds": 0.12,
+  "source": "https://opengameart.org/content/swishes-sound-pack",
+  "author": "artisticdude",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/02_rpg_sound_pack_battle_swing2.wav",
+  "category": "whoosh",
+  "seconds": 0.12,
+  "source": "https://opengameart.org/content/rpg-sound-pack",
+  "author": "artisticdude",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/03_card_swipe_02.wav",
+  "category": "whoosh",
+  "seconds": 0.15,
+  "source": "https://opengameart.org/content/58-random-sound-effects",
+  "author": "tokyogeisha",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/04_card_swipe_03.wav",
+  "category": "whoosh",
+  "seconds": 0.12,
+  "source": "https://opengameart.org/content/58-random-sound-effects",
+  "author": "tokyogeisha",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/05_swishes_swish_8.wav",
+  "category": "whoosh",
+  "seconds": 0.12,
+  "source": "https://opengameart.org/content/swishes-sound-pack",
+  "author": "artisticdude",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/06_swishes_swish_10.wav",
+  "category": "whoosh",
+  "seconds": 0.12,
+  "source": "https://opengameart.org/content/swishes-sound-pack",
+  "author": "artisticdude",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/07_swishes_swish_2.wav",
+  "category": "whoosh",
+  "seconds": 0.08,
+  "source": "https://opengameart.org/content/swishes-sound-pack",
+  "author": "artisticdude",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/08_sound_effects_whoosh2.wav",
+  "category": "whoosh",
+  "seconds": 0.42,
+  "source": "https://opengameart.org/content/18-random-video-game-sound-effects",
+  "author": "bart",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/09_rpg_sound_pack_battle_swing3.wav",
+  "category": "whoosh",
+  "seconds": 0.11,
+  "source": "https://opengameart.org/content/rpg-sound-pack",
+  "author": "artisticdude",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/10_sound_effects_whoosh.wav",
+  "category": "whoosh",
+  "seconds": 0.38,
+  "source": "https://opengameart.org/content/18-random-video-game-sound-effects",
+  "author": "bart",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/11_card_swipe_01.wav",
+  "category": "whoosh",
+  "seconds": 0.14,
+  "source": "https://opengameart.org/content/58-random-sound-effects",
+  "author": "tokyogeisha",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/12_rpg_sound_pack_battle_swing.wav",
+  "category": "whoosh",
+  "seconds": 0.14,
+  "source": "https://opengameart.org/content/rpg-sound-pack",
+  "author": "artisticdude",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/01_2017_16_bit_mini_pack_jump_ogg_jump_001.wav",
+  "category": "boing",
+  "seconds": 0.37,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/02_spring_03.wav",
+  "category": "boing",
+  "seconds": 0.38,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/03_boings_preview.wav",
+  "category": "boing",
+  "seconds": 0.88,
+  "source": "https://opengameart.org/content/boings",
+  "author": "ezduzziteh",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/04_2017_16_bit_mini_pack_jump_wav_jump_003.wav",
+  "category": "boing",
+  "seconds": 0.24,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/05_spring_07.wav",
+  "category": "boing",
+  "seconds": 0.46,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/06_bing_02.wav",
+  "category": "boing",
+  "seconds": 0.29,
+  "source": "https://opengameart.org/content/boings",
+  "author": "ezduzziteh",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/07_2017_16_bit_mini_pack_jump_wav_jump_005.wav",
+  "category": "boing",
+  "seconds": 0.26,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/08_2017_16_bit_mini_pack_jump_wav_jump_009.wav",
+  "category": "boing",
+  "seconds": 0.17,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/09_snd_enemyjump.wav",
+  "category": "boing",
+  "seconds": 1.12,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/10_bung_01.wav",
+  "category": "boing",
+  "seconds": 0.23,
+  "source": "https://opengameart.org/content/boings",
+  "author": "ezduzziteh",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/11_metal_spring_01.wav",
+  "category": "boing",
+  "seconds": 0.35,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/12_spring_01.wav",
+  "category": "boing",
+  "seconds": 0.79,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/13_spring_09.wav",
+  "category": "boing",
+  "seconds": 0.5,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/14_odgegames_com_wobble_01_44k_32bit_stereo.wav",
+  "category": "boing",
+  "seconds": 0.38,
+  "source": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+  "author": "blacklodgegames",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/15_odgegames_com_wobble_03_44k_32bit_stereo.wav",
+  "category": "boing",
+  "seconds": 0.72,
+  "source": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+  "author": "blacklodgegames",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/16_odgegames_com_wobble_06_44k_32bit_stereo.wav",
+  "category": "boing",
+  "seconds": 0.27,
+  "source": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+  "author": "blacklodgegames",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/17_odgegames_com_wobble_08_44k_32bit_stereo.wav",
+  "category": "boing",
+  "seconds": 0.89,
+  "source": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+  "author": "blacklodgegames",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/18_sound_effects_boing.wav",
+  "category": "boing",
+  "seconds": 0.8,
+  "source": "https://opengameart.org/content/18-random-video-game-sound-effects",
+  "author": "bart",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/19_sound_as_h_jump.wav",
+  "category": "boing",
+  "seconds": 0.21,
+  "source": "https://opengameart.org/content/nhfea-sound",
+  "author": "roars-games",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/20_bing_01_0.wav",
+  "category": "boing",
+  "seconds": 0.22,
+  "source": "https://opengameart.org/content/boings",
+  "author": "ezduzziteh",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/21_metal_spring_02.wav",
+  "category": "boing",
+  "seconds": 0.34,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/01_3pops_pop3.wav",
+  "category": "pop",
+  "seconds": 0.2,
+  "source": "https://opengameart.org/content/3-pop-sounds",
+  "author": "wubitog",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/02_plop_01.wav",
+  "category": "pop",
+  "seconds": 0.11,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/03_pop_01.wav",
+  "category": "pop",
+  "seconds": 0.12,
+  "source": "https://opengameart.org/content/58-random-sound-effects",
+  "author": "tokyogeisha",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/04_slidepop_0.wav",
+  "category": "pop",
+  "seconds": 0.52,
+  "source": "https://opengameart.org/content/a-slide-pop-sound",
+  "author": "ezduzziteh",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/05_pop.wav",
+  "category": "pop",
+  "seconds": 0.41,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/06_pop.wav",
+  "category": "pop",
+  "seconds": 0.11,
+  "source": "https://opengameart.org/content/bubbles-pop",
+  "author": "farfadet46",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/07_rpg_sound_pack_inventory_bubble2.wav",
+  "category": "pop",
+  "seconds": 0.33,
+  "source": "https://opengameart.org/content/rpg-sound-pack",
+  "author": "artisticdude",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/08_al_sounds_simple_bleeps_sfx_sounds_blip9.wav",
+  "category": "pop",
+  "seconds": 0.07,
+  "source": "https://opengameart.org/content/512-sound-effects-8-bit-style",
+  "author": "subspaceaudio",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/09_bubble_02.wav",
+  "category": "pop",
+  "seconds": 0.26,
+  "source": "https://opengameart.org/content/40-cc0-water-splash-slime-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/10_al_sounds_simple_bleeps_sfx_sounds_blip3.wav",
+  "category": "pop",
+  "seconds": 0.09,
+  "source": "https://opengameart.org/content/512-sound-effects-8-bit-style",
+  "author": "subspaceaudio",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/11_balloon_pop.wav",
+  "category": "pop",
+  "seconds": 0.47,
+  "source": "https://opengameart.org/content/balloon-sounds",
+  "author": "antumdeluge",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/12_bubble_03.wav",
+  "category": "pop",
+  "seconds": 0.49,
+  "source": "https://opengameart.org/content/40-cc0-water-splash-slime-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/13_bubbles_single1.wav",
+  "category": "pop",
+  "seconds": 0.3,
+  "source": "https://opengameart.org/content/bubble-sound-effects",
+  "author": "bmaczero",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/14_pop_02.wav",
+  "category": "pop",
+  "seconds": 0.11,
+  "source": "https://opengameart.org/content/58-random-sound-effects",
+  "author": "tokyogeisha",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/15_l_sounds_simple_bleeps_sfx_sounds_blip11.wav",
+  "category": "pop",
+  "seconds": 0.09,
+  "source": "https://opengameart.org/content/512-sound-effects-8-bit-style",
+  "author": "subspaceaudio",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/16_bubbles_single3.wav",
+  "category": "pop",
+  "seconds": 0.38,
+  "source": "https://opengameart.org/content/bubble-sound-effects",
+  "author": "bmaczero",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/17_pop_0.wav",
+  "category": "pop",
+  "seconds": 0.11,
+  "source": "https://opengameart.org/content/bubbles-pop",
+  "author": "farfadet46",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/18_slidepop.wav",
+  "category": "pop",
+  "seconds": 0.52,
+  "source": "https://opengameart.org/content/a-slide-pop-sound",
+  "author": "ezduzziteh",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/19_balloon_pop_0.wav",
+  "category": "pop",
+  "seconds": 0.47,
+  "source": "https://opengameart.org/content/balloon-sounds",
+  "author": "antumdeluge",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/20_bubbles_single2.wav",
+  "category": "pop",
+  "seconds": 0.41,
+  "source": "https://opengameart.org/content/bubble-sound-effects",
+  "author": "bmaczero",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/squeak/01_sound_effects_squeak.wav",
+  "category": "squeak",
+  "seconds": 0.06,
+  "source": "https://opengameart.org/content/18-random-video-game-sound-effects",
+  "author": "bart",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/squeak/02_wood_squeak_01.wav",
+  "category": "squeak",
+  "seconds": 0.32,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/squeak/03_wood_squeak_02.wav",
+  "category": "squeak",
+  "seconds": 0.27,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/squeak/04_sound_effects_squeak2.wav",
+  "category": "squeak",
+  "seconds": 0.09,
+  "source": "https://opengameart.org/content/18-random-video-game-sound-effects",
+  "author": "bart",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boom/01_dull_explosion.wav",
+  "category": "boom",
+  "seconds": 2.99,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boom/02_mini_pack_explosion2_wav_explosion2_001.wav",
+  "category": "boom",
+  "seconds": 1.17,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boom/03_it_mini_pack_explosion_ogg_explosion_003.wav",
+  "category": "boom",
+  "seconds": 0.33,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boom/04_explosion.wav",
+  "category": "boom",
+  "seconds": 0.25,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boom/05_it_mini_pack_explosion_ogg_explosion_006.wav",
+  "category": "boom",
+  "seconds": 0.75,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boom/06_snd_yoghurtblast.wav",
+  "category": "boom",
+  "seconds": 0.58,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boom/07_nenadsimic_muffled_distant_explosion.wav",
+  "category": "boom",
+  "seconds": 1.23,
+  "source": "https://opengameart.org/content/muffled-distant-explosion",
+  "author": "nenadsimic",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boom/08_nenadsimic_muffled_distant_explosion.wav",
+  "category": "boom",
+  "seconds": 1.23,
+  "source": "https://opengameart.org/content/muffled-distant-explosion",
+  "author": "nenadsimic",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boom/09_yd_sounds_explode.wav",
+  "category": "boom",
+  "seconds": 0.56,
+  "source": "https://opengameart.org/content/platformer-sounds-terminal-interaction-door-shots-bang-and-footsteps",
+  "author": "yd",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rumble/01_cave_in_starninjas_0.wav",
+  "category": "rumble",
+  "seconds": 3.89,
+  "source": "https://opengameart.org/content/cave-in",
+  "author": "starninjas",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rumble/02_sound_as_r_quake.wav",
+  "category": "rumble",
+  "seconds": 2.37,
+  "source": "https://opengameart.org/content/nhfea-sound",
+  "author": "roars-games",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rumble/03_shake.wav",
+  "category": "rumble",
+  "seconds": 4.84,
+  "source": "https://opengameart.org/content/earthquake-and-open-sesame",
+  "author": "mieki256",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rumble/04_cave_in_starninjas.wav",
+  "category": "rumble",
+  "seconds": 3.89,
+  "source": "https://opengameart.org/content/cave-in",
+  "author": "starninjas",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rumble/05_shake.wav",
+  "category": "rumble",
+  "seconds": 4.79,
+  "source": "https://opengameart.org/content/earthquake-and-open-sesame",
+  "author": "mieki256",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fire/01_spell_fire_05.wav",
+  "category": "fire",
+  "seconds": 1.17,
+  "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fire/02_spell_fire_04.wav",
+  "category": "fire",
+  "seconds": 1.21,
+  "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fire/03_spell_fire_06.wav",
+  "category": "fire",
+  "seconds": 0.84,
+  "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fire/04_male_war_suppressing_fire.wav",
+  "category": "fire",
+  "seconds": 1.17,
+  "source": "https://opengameart.org/content/voiceover-pack-40-lines",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fire/05_male_war_fire_in_the_hole.wav",
+  "category": "fire",
+  "seconds": 1.3,
+  "source": "https://opengameart.org/content/voiceover-pack-40-lines",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fire/06_female_war_fire_in_the_hole.wav",
+  "category": "fire",
+  "seconds": 0.96,
+  "source": "https://opengameart.org/content/voiceover-pack-40-lines",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fire/07_fire_1.wav",
+  "category": "fire",
+  "seconds": 3.59,
+  "source": "https://opengameart.org/content/fire-crackling",
+  "author": "antumdeluge",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/01_leaves01.wav",
+  "category": "step",
+  "seconds": 0.39,
+  "source": "https://opengameart.org/content/different-steps-on-wood-stone-leaves-gravel-and-mud",
+  "author": "tinyworlds",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/02_bit_mini_pack_footstep_wav_footstep_007.wav",
+  "category": "step",
+  "seconds": 0.13,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/03_bit_mini_pack_footstep_ogg_footstep_008.wav",
+  "category": "step",
+  "seconds": 0.11,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/04_sound_as_h_walk_1.wav",
+  "category": "step",
+  "seconds": 0.2,
+  "source": "https://opengameart.org/content/nhfea-sound",
+  "author": "roars-games",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/05_bit_mini_pack_footstep_wav_footstep_004.wav",
+  "category": "step",
+  "seconds": 0.14,
+  "source": "https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack",
+  "author": "phoenix1291",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/06_leaves02.wav",
+  "category": "step",
+  "seconds": 0.47,
+  "source": "https://opengameart.org/content/different-steps-on-wood-stone-leaves-gravel-and-mud",
+  "author": "tinyworlds",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/07_yd_sounds_steps_stairs1.wav",
+  "category": "step",
+  "seconds": 0.37,
+  "source": "https://opengameart.org/content/platformer-sounds-terminal-interaction-door-shots-bang-and-footsteps",
+  "author": "yd",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/08_ogg_footstep02.wav",
+  "category": "step",
+  "seconds": 0.21,
+  "source": "https://opengameart.org/content/50-rpg-sound-effects",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/09_sound_as_h_walk_2.wav",
+  "category": "step",
+  "seconds": 0.2,
+  "source": "https://opengameart.org/content/nhfea-sound",
+  "author": "roars-games",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/10_ogg_footstep05.wav",
+  "category": "step",
+  "seconds": 0.25,
+  "source": "https://opengameart.org/content/50-rpg-sound-effects",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/11_wood03.wav",
+  "category": "step",
+  "seconds": 0.3,
+  "source": "https://opengameart.org/content/different-steps-on-wood-stone-leaves-gravel-and-mud",
+  "author": "tinyworlds",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/12_grunt_04.wav",
+  "category": "step",
+  "seconds": 0.45,
+  "source": "https://opengameart.org/content/80-cc0-creature-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/13_grunt_02.wav",
+  "category": "step",
+  "seconds": 0.52,
+  "source": "https://opengameart.org/content/80-cc0-creature-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/14_crunch_01.wav",
+  "category": "step",
+  "seconds": 0.39,
+  "source": "https://opengameart.org/content/58-random-sound-effects",
+  "author": "tokyogeisha",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/step/15_sfx100v2_footstep_wood_01.wav",
+  "category": "step",
+  "seconds": 0.24,
+  "source": "https://opengameart.org/content/100-cc0-sfx-2",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rock/01_item_stone_01.wav",
+  "category": "rock",
+  "seconds": 0.4,
+  "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rock/02_tap_stone.wav",
+  "category": "rock",
+  "seconds": 0.3,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rock/03_sfx100v2_stones_02.wav",
+  "category": "rock",
+  "seconds": 0.39,
+  "source": "https://opengameart.org/content/100-cc0-sfx-2",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rock/04_sfx100v2_stones_01.wav",
+  "category": "rock",
+  "seconds": 0.32,
+  "source": "https://opengameart.org/content/100-cc0-sfx-2",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rock/05_sfx100v2_stones_03.wav",
+  "category": "rock",
+  "seconds": 0.44,
+  "source": "https://opengameart.org/content/100-cc0-sfx-2",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rock/06_stones_03.wav",
+  "category": "rock",
+  "seconds": 0.73,
+  "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rock/07_stones_02.wav",
+  "category": "rock",
+  "seconds": 0.61,
+  "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rock/08_bfh1_rock_falling_08.wav",
+  "category": "rock",
+  "seconds": 0.31,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rock/09_stone01.wav",
+  "category": "rock",
+  "seconds": 0.23,
+  "source": "https://opengameart.org/content/different-steps-on-wood-stone-leaves-gravel-and-mud",
+  "author": "tinyworlds",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rock/10_bfh1_rock_falling_07.wav",
+  "category": "rock",
+  "seconds": 0.28,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rock/11_bfh1_rock_breaking_03.wav",
+  "category": "rock",
+  "seconds": 0.44,
+  "source": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rock/12_wood01.wav",
+  "category": "rock",
+  "seconds": 0.24,
+  "source": "https://opengameart.org/content/different-steps-on-wood-stone-leaves-gravel-and-mud",
+  "author": "tinyworlds",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rock/13_grind_stone.wav",
+  "category": "rock",
+  "seconds": 1.4,
+  "source": "https://opengameart.org/content/various-sound-effects",
+  "author": "laleksic",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/rock/14_steps_preview.wav",
+  "category": "rock",
+  "seconds": 2.95,
+  "source": "https://opengameart.org/content/different-steps-on-wood-stone-leaves-gravel-and-mud",
+  "author": "tinyworlds",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/01_rise01.wav",
+  "category": "ding",
+  "seconds": 0.52,
+  "source": "https://opengameart.org/content/level-up-power-up-coin-get-13-sounds",
+  "author": "wobbleboxx",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/02_rpg_sound_pack_inventory_coin.wav",
+  "category": "ding",
+  "seconds": 0.59,
+  "source": "https://opengameart.org/content/rpg-sound-pack",
+  "author": "artisticdude",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/03_a_general_sounds_coins_sfx_coin_cluster9.wav",
+  "category": "ding",
+  "seconds": 0.74,
+  "source": "https://opengameart.org/content/512-sound-effects-8-bit-style",
+  "author": "subspaceaudio",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/04_jumping_and_landing_sfx_movement_jump13.wav",
+  "category": "ding",
+  "seconds": 0.16,
+  "source": "https://opengameart.org/content/512-sound-effects-8-bit-style",
+  "author": "subspaceaudio",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/05_retro_coin_01.wav",
+  "category": "ding",
+  "seconds": 0.27,
+  "source": "https://opengameart.org/content/50-cc0-retro-synth-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/06_t_jumping_and_landing_sfx_movement_jump4.wav",
+  "category": "ding",
+  "seconds": 0.19,
+  "source": "https://opengameart.org/content/512-sound-effects-8-bit-style",
+  "author": "subspaceaudio",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/07_rise05.wav",
+  "category": "ding",
+  "seconds": 2.1,
+  "source": "https://opengameart.org/content/level-up-power-up-coin-get-13-sounds",
+  "author": "wobbleboxx",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/08_coin6.wav",
+  "category": "ding",
+  "seconds": 0.26,
+  "source": "https://opengameart.org/content/10-8bit-coin-sounds",
+  "author": "lukerustltd",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/09_bell_02.wav",
+  "category": "ding",
+  "seconds": 0.31,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/10_item_coins_02.wav",
+  "category": "ding",
+  "seconds": 0.57,
+  "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/11_coin4.wav",
+  "category": "ding",
+  "seconds": 0.35,
+  "source": "https://opengameart.org/content/10-8bit-coin-sounds",
+  "author": "lukerustltd",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/12_upper01.wav",
+  "category": "ding",
+  "seconds": 1.99,
+  "source": "https://opengameart.org/content/level-up-power-up-coin-get-13-sounds",
+  "author": "wobbleboxx",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/13_ogg_handlecoins.wav",
+  "category": "ding",
+  "seconds": 0.74,
+  "source": "https://opengameart.org/content/50-rpg-sound-effects",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/14_bell_03.wav",
+  "category": "ding",
+  "seconds": 1.15,
+  "source": "https://opengameart.org/content/100-cc0-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/15_coins_04.wav",
+  "category": "ding",
+  "seconds": 0.36,
+  "source": "https://opengameart.org/content/58-random-sound-effects",
+  "author": "tokyogeisha",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/16_coin1.wav",
+  "category": "ding",
+  "seconds": 0.36,
+  "source": "https://opengameart.org/content/10-8bit-coin-sounds",
+  "author": "lukerustltd",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/17_item_coins_04.wav",
+  "category": "ding",
+  "seconds": 1.52,
+  "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/18_rpg_sound_pack_inventory_coin2.wav",
+  "category": "ding",
+  "seconds": 0.87,
+  "source": "https://opengameart.org/content/rpg-sound-pack",
+  "author": "artisticdude",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/19_coins_02.wav",
+  "category": "ding",
+  "seconds": 0.46,
+  "source": "https://opengameart.org/content/58-random-sound-effects",
+  "author": "tokyogeisha",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ding/20_coins_01.wav",
+  "category": "ding",
+  "seconds": 0.23,
+  "source": "https://opengameart.org/content/58-random-sound-effects",
+  "author": "tokyogeisha",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/01_female_you_lose.wav",
+  "category": "fail",
+  "seconds": 1.18,
+  "source": "https://opengameart.org/content/voiceover-pack-40-lines",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/02_audio_error_003.wav",
+  "category": "fail",
+  "seconds": 0.34,
+  "source": "https://opengameart.org/content/interface-sounds",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/03_ogg_doorclose_3.wav",
+  "category": "fail",
+  "seconds": 0.7,
+  "source": "https://opengameart.org/content/50-rpg-sound-effects",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/04_new_folder_wrong_error.wav",
+  "category": "fail",
+  "seconds": 0.38,
+  "source": "https://opengameart.org/content/ui-sounds-0",
+  "author": "haeldb",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/05_ogg_doorclose_1.wav",
+  "category": "fail",
+  "seconds": 0.45,
+  "source": "https://opengameart.org/content/50-rpg-sound-effects",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/06_female_wrong.wav",
+  "category": "fail",
+  "seconds": 0.6,
+  "source": "https://opengameart.org/content/voiceover-pack-40-lines",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/07_audio_error_004.wav",
+  "category": "fail",
+  "seconds": 0.1,
+  "source": "https://opengameart.org/content/interface-sounds",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/08_audio_close_002.wav",
+  "category": "fail",
+  "seconds": 0.31,
+  "source": "https://opengameart.org/content/interface-sounds",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/09_door_creak_close.wav",
+  "category": "fail",
+  "seconds": 1.14,
+  "source": "https://opengameart.org/content/various-sound-effects",
+  "author": "laleksic",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/10_ogg_doorclose_4.wav",
+  "category": "fail",
+  "seconds": 0.5,
+  "source": "https://opengameart.org/content/50-rpg-sound-effects",
+  "author": "kenney",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/11_cockatrice_error.wav",
+  "category": "fail",
+  "seconds": 0.24,
+  "source": "https://opengameart.org/content/card-game-sounds",
+  "author": "haeldb",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/12_es_com_you_lose_arenacombatannouncerpack.wav",
+  "category": "fail",
+  "seconds": 1.85,
+  "source": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+  "author": "blacklodgegames",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/13_metal_close_01.wav",
+  "category": "fail",
+  "seconds": 0.34,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/14_drawer_close.wav",
+  "category": "fail",
+  "seconds": 0.63,
+  "source": "https://opengameart.org/content/various-sound-effects",
+  "author": "laleksic",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/15_wood_close_02.wav",
+  "category": "fail",
+  "seconds": 0.23,
+  "source": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crowd/01_insectoralien.wav",
+  "category": "crowd",
+  "seconds": 1.19,
+  "source": "https://opengameart.org/content/insect-or-alien-scream",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crowd/02_insectoralienshort_0.wav",
+  "category": "crowd",
+  "seconds": 0.58,
+  "source": "https://opengameart.org/content/insect-or-alien-scream-short",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crowd/03_evil_laugh3.wav",
+  "category": "crowd",
+  "seconds": 2.18,
+  "source": "https://opengameart.org/content/sinister-laugh",
+  "author": "weaponguy",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crowd/04_laugh_evil_1_0.wav",
+  "category": "crowd",
+  "seconds": 2.35,
+  "source": "https://opengameart.org/content/evil-laugh",
+  "author": "antumdeluge",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crowd/05_montageaudio_20120408_144226.wav",
+  "category": "crowd",
+  "seconds": 1.22,
+  "source": "https://opengameart.org/content/insect-or-alien-scream",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crowd/06_scream_02.wav",
+  "category": "crowd",
+  "seconds": 0.85,
+  "source": "https://opengameart.org/content/80-cc0-creature-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crowd/07_montageaudio_20120408_144141.wav",
+  "category": "crowd",
+  "seconds": 0.6,
+  "source": "https://opengameart.org/content/insect-or-alien-scream-short",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crowd/08_laugh_evil_1.wav",
+  "category": "crowd",
+  "seconds": 2.35,
+  "source": "https://opengameart.org/content/evil-laugh",
+  "author": "antumdeluge",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crowd/09_snd_birdscream.wav",
+  "category": "crowd",
+  "seconds": 1.6,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crowd/10_sound_as_d_laugh.wav",
+  "category": "crowd",
+  "seconds": 2.0,
+  "source": "https://opengameart.org/content/nhfea-sound",
+  "author": "roars-games",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crowd/11_scream_01.wav",
+  "category": "crowd",
+  "seconds": 0.85,
+  "source": "https://opengameart.org/content/80-cc0-creature-sfx",
+  "author": "rubberduck",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/crowd/12_evil_laugh3_filtered.wav",
+  "category": "crowd",
+  "seconds": 2.12,
+  "source": "https://opengameart.org/content/sinister-laugh",
+  "author": "weaponguy",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ghost/01_bodup_ghostmoans_mp3_qubodup_ghostmoan04.wav",
+  "category": "ghost",
+  "seconds": 4.23,
+  "source": "https://opengameart.org/content/ghost-monster-voice-moaning-growling",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ghost/02_sfx_misc_other_trex_moan.wav",
+  "category": "ghost",
+  "seconds": 1.82,
+  "source": "https://opengameart.org/content/random-sfx",
+  "author": "%C3%A9crivain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ghost/03_moan.wav",
+  "category": "ghost",
+  "seconds": 1.41,
+  "source": "https://opengameart.org/content/various-sound-effects-0",
+  "author": "spring-spring",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ghost/04_bodup_ghostmoans_mp3_qubodup_ghostmoan02.wav",
+  "category": "ghost",
+  "seconds": 4.54,
+  "source": "https://opengameart.org/content/ghost-monster-voice-moaning-growling",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ghost/05_bodup_ghostmoans_wav_qubodup_ghostmoan04.wav",
+  "category": "ghost",
+  "seconds": 4.23,
+  "source": "https://opengameart.org/content/ghost-monster-voice-moaning-growling",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/ghost/06_ghostbreath.wav",
+  "category": "ghost",
+  "seconds": 3.27,
+  "source": "https://opengameart.org/content/ghost-breath",
+  "author": "qubodup",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boom/ob_meme_boom_1.wav",
+  "category": "boom",
+  "seconds": 1.6,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boom/ob_meme_boom_2.wav",
+  "category": "boom",
+  "seconds": 1.6,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boom/ob_meme_boom_3.wav",
+  "category": "boom",
+  "seconds": 1.6,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/thunder/ob_lightning_crack_1.wav",
+  "category": "thunder",
+  "seconds": 1.86,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/thunder/ob_lightning_crack_2.wav",
+  "category": "thunder",
+  "seconds": 2.59,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/thunder/ob_lightning_crack_3.wav",
+  "category": "thunder",
+  "seconds": 3.51,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/thunder/ob_lightning_crack_4.wav",
+  "category": "thunder",
+  "seconds": 4.43,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/thunder/ob_thunder_roll_1.wav",
+  "category": "thunder",
+  "seconds": 4.96,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/thunder/ob_thunder_roll_2.wav",
+  "category": "thunder",
+  "seconds": 5.94,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/thunder/ob_thunder_roll_3.wav",
+  "category": "thunder",
+  "seconds": 6.93,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/thunder/ob_thunder_roll_4.wav",
+  "category": "thunder",
+  "seconds": 7.93,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/ob_riser_1.wav",
+  "category": "whoosh",
+  "seconds": 1.28,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/ob_riser_2.wav",
+  "category": "whoosh",
+  "seconds": 1.71,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/ob_riser_3.wav",
+  "category": "whoosh",
+  "seconds": 2.14,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/ob_whoosh_1.wav",
+  "category": "whoosh",
+  "seconds": 0.47,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/ob_whoosh_2.wav",
+  "category": "whoosh",
+  "seconds": 0.62,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/ob_whoosh_3.wav",
+  "category": "whoosh",
+  "seconds": 0.76,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/whoosh/ob_whoosh_4.wav",
+  "category": "whoosh",
+  "seconds": 0.89,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/squeak/ob_record_scratch_1.wav",
+  "category": "squeak",
+  "seconds": 0.6,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/squeak/ob_record_scratch_2.wav",
+  "category": "squeak",
+  "seconds": 0.6,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/squeak/ob_slide_whistle_1.wav",
+  "category": "squeak",
+  "seconds": 0.8,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/squeak/ob_slide_whistle_2.wav",
+  "category": "squeak",
+  "seconds": 0.8,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/squeak/ob_slide_whistle_3.wav",
+  "category": "squeak",
+  "seconds": 0.8,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/ob_boing_1.wav",
+  "category": "boing",
+  "seconds": 0.7,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/ob_boing_2.wav",
+  "category": "boing",
+  "seconds": 0.7,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/boing/ob_boing_3.wav",
+  "category": "boing",
+  "seconds": 0.7,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/ob_pop_1.wav",
+  "category": "pop",
+  "seconds": 0.12,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/ob_pop_2.wav",
+  "category": "pop",
+  "seconds": 0.12,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/pop/ob_pop_3.wav",
+  "category": "pop",
+  "seconds": 0.12,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/tension/ob_heartbeat.wav",
+  "category": "tension",
+  "seconds": 1.45,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/tension/ob_tick_tock.wav",
+  "category": "tension",
+  "seconds": 1.57,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/tension/ob_dun_dun_1.wav",
+  "category": "tension",
+  "seconds": 1.55,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/tension/ob_dun_dun_2.wav",
+  "category": "tension",
+  "seconds": 1.55,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/ob_sad_trombone_1.wav",
+  "category": "fail",
+  "seconds": 2.2,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ },
+ {
+  "file": "kit/fail/ob_sad_trombone_2.wav",
+  "category": "fail",
+  "seconds": 2.2,
+  "source": "Old Brain original (synthesized in tools/sfx_kit.py)",
+  "author": "Old Brain",
+  "license": "CC0"
+ }
+]

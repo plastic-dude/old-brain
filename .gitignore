@@ -3,3 +3,8 @@ __pycache__/
 .venv/
 renders/
 *.mp4
+sfx/raw/
+sfx/private/
+sfx/private.json
+.pytest_cache/
+!docs/media/*.mp4

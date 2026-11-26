@@ -21,12 +21,15 @@ Everything obeys `spec/`. When a tool fights the spec, we change the tool.
 | `face.py` | Parametric faces: eye whites, pupils, lids, chalk brows, mouths, sweat, tremble, rage flush. 9 presets from the bible | PIL |
 | `camera.py` | Bible camera moves on multiplane layers: push-in, pull-back, snap zoom, shake, whip pan; contact shadows | numpy/PIL (DepthFlow for single-image depth) |
 | `assemble.py` | Shots to 1080x1920 30fps MP4; whip era-cut, handprint portal, safe-zone captions | MoviePy, ffmpeg |
-| `voice.py` | Per-archetype voice chains from the spec, crowd builder from her takes, -14 LUFS master | Pedalboard, ffmpeg-normalize |
+| `voice.py` | **Untested (no real takes yet).** Per-archetype voice chains from the spec, crowd builder from her takes, -14 LUFS master | Pedalboard, ffmpeg-normalize |
 | `qa.py` | Technical gate on the final MP4: encode, no fade-up, hook text by frame 1, 9:16 safe zone, cut rhythm, caption-vs-figure overlap, loop seam (only for videos marked to loop) | rebuilt from iart-ai/tiktok-video-skills |
-| `timing.py` | Fits each script line to her real takes: words/sec (syllables for gibberish), OVER / DEAD AIR / OK, new shot length | adapted from BusyBee3333 retention-pass |
-| `lipsync.py` | Rhubarb phonetic cues (gibberish-safe) to mouth shapes | Rhubarb |
+| `timing.py` | Fits each script line to her takes (words/sec, syllables for gibberish, OVER / DEAD AIR / OK); optional pause tightening (off by default, beats protected); `split_take` cuts one long recording into lines at its silences; `mixcheck` flags SFX that crowd a spoken word | ideas from BusyBee3333, what-if-animation, animate-pls (see docs/borrowed-craft.md) |
+| `lipsync.py` | **Untested (Rhubarb binary not installed yet).** Rhubarb phonetic cues (gibberish-safe) to mouth shapes | Rhubarb |
 
 Demo: `python examples/prophet_demo.py <poses_dir> out.mp4` renders `docs/media/prophet-test.mp4` from three painted poses.
+
+## Sound effects
+`sfx/kit/` holds the curated kit: CC0 files from OpenGameArt (incl. Kenney) and Old Brain originals synthesized in code (CC0). Each file's source, author and licence are in `sfx/kit.json`. Sounds without a clear licence never enter this repo.
 
 ## Layout
 | Path | Contents |
