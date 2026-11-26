@@ -42,7 +42,8 @@ def _text_box(f):  # caption = near-white pixels with dark stroke; bbox of chalk
     ys, xs = np.nonzero(wht)
     return None if len(ys) < 1500 else (int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max()))
 
-def check(path, caption_zone: tuple = (0, 0, 1080, 700)) -> dict:
+def check(path, caption_zone: tuple = (0, 0, 1080, 700), loop: bool = False) -> dict:
+    """loop=True only for episodes written to loop; otherwise the seam is reported, never failed."""
     p = probe(path); F = frames(path); r = {}
     r["encode"] = {"ok": (p["w"], p["h"]) == (1080, 1920) and abs(p["fps"] - 30) < 0.01 and p["codec"] == "h264" and p["pix"] == "yuv420p", **p}
     lum0 = float(F[0].mean()) / 255
@@ -60,7 +61,11 @@ def check(path, caption_zone: tuple = (0, 0, 1080, 700)) -> dict:
     r["rhythm"] = {"ok": bool(gaps.max() <= 4.0) and (len(gaps) < 3 or gaps.std() > 0.15),
                    "changes_at_s": merged[:-1], "longest_gap_s": round(float(gaps.max()), 2)}
     seam = _diff(F[0], F[-1])
-    r["loop_seam"] = {"ok": seam < 0.05, "diff": round(seam, 3)}
+    r["loop_seam"] = {"ok": seam < 0.05 if loop else True, "required": loop, "diff": round(seam, 3)}
+    side = Path(str(path) + ".render.json")
+    if side.exists():  # overlap audit written at render time
+        hits = json.loads(side.read_text()).get("overlaps", [])
+        r["overlap"] = {"ok": not hits, "hits": hits[:10]}
     r["pass"] = all(v["ok"] for k, v in r.items() if isinstance(v, dict))
     return r
 
@@ -72,4 +77,4 @@ def contact_sheet(path, out, n: int = 6, h: int = 480):
     s.save(out); return out
 
 if __name__ == "__main__":
-    import sys; res = check(sys.argv[1]); print(json.dumps(res, indent=1, default=lambda o: o.item() if hasattr(o, "item") else str(o))); sys.exit(0 if res["pass"] else 1)
+    import sys; res = check(sys.argv[1], loop="--loop" in sys.argv); print(json.dumps(res, indent=1, default=lambda o: o.item() if hasattr(o, "item") else str(o))); sys.exit(0 if res["pass"] else 1)

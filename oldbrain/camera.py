@@ -53,6 +53,29 @@ class Layer:
     pos: tuple[int, int] = (0, 0) # top-left in frame space at zoom 1
     bob: float = 0.0              # idle breathing amplitude in px (figures)
     vx: float = 0.0               # drift in px/second (walks, entrances)
+    pop: float = 0.0              # squash-and-stretch on entry (0.08 = lands with weight)
+
+def squash(pop: float, s: float) -> tuple[float, float]:
+    """Damped squash/stretch, volume-preserving. s = seconds into the shot.
+    Lands squashed, overshoots into a stretch, settles: the squash IS the weight.
+    (Idea from BusyBee3333/animated-explainer-skills' CustomBounce drops.)"""
+    if pop <= 0: return 1.0, 1.0
+    sy = 1 - pop * math.exp(-7 * s) * math.cos(2 * math.pi * 2.6 * s)
+    return 1 / math.sqrt(sy), sy
+
+def layer_box(L: 'Layer', shot: 'Shot', t: float, size=(1080, 1920)):
+    """On-screen box of a layer at time t, same maths as render_frame (for overlap audits)."""
+    W, H = size; cam = shot.move(t, shot.duration)
+    z = 1 + (cam.zoom - 1) * (0.35 + 0.65 * L.depth); par = 0.35 + 0.65 * L.depth
+    sx, sy = squash(L.pop, t * shot.duration)
+    w, h = L.image.width * z * sx, L.image.height * z * sy
+    x = W / 2 + (L.pos[0] - W / 2) * z - cam.x * par + L.vx * t * shot.duration * z
+    y = H / 2 + (L.pos[1] - H / 2) * z - cam.y * par + (L.image.height * z - h)
+    if L.bob: y += L.bob * math.sin(2 * math.pi * 0.6 * t * shot.duration)
+    x -= (w - L.image.width * z) / 2
+    bb = L.image.getchannel("A").point(lambda v: 255 if v > 40 else 0).getbbox() or (0, 0, L.image.width, L.image.height)
+    kx, ky = w / L.image.width, h / L.image.height   # visible pixels only, not padding
+    return (x + bb[0] * kx, y + bb[1] * ky, x + bb[2] * kx, y + bb[3] * ky)
 
 @dataclass
 class Shot:
@@ -67,11 +90,13 @@ def render_frame(shot: Shot, t: float, size=(1080, 1920)) -> Image.Image:
         z = 1 + (cam.zoom - 1) * (0.35 + 0.65 * L.depth)   # far layers zoom less
         par = 0.35 + 0.65 * L.depth
         img = L.image
-        w, h = round(img.width * z), round(img.height * z)
+        sx, sy = squash(L.pop, t * shot.duration)
+        w0, h0 = img.width * z, img.height * z
+        w, h = round(w0 * sx), round(h0 * sy)
         img = img.resize((w, h), Image.BICUBIC)
         cx, cy = W / 2, H / 2
-        x = cx + (L.pos[0] - cx) * z - cam.x * par
-        y = cy + (L.pos[1] - cy) * z - cam.y * par
+        x = cx + (L.pos[0] - cx) * z - cam.x * par - (w - w0) / 2   # squash around the feet
+        y = cy + (L.pos[1] - cy) * z - cam.y * par + (h0 - h)
         if L.bob: y += L.bob * math.sin(2 * math.pi * 0.6 * t * shot.duration)
         x += L.vx * t * shot.duration * z
         _paste(frame, img, x, y)

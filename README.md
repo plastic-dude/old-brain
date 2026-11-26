@@ -22,7 +22,8 @@ Everything obeys `spec/`. When a tool fights the spec, we change the tool.
 | `camera.py` | Bible camera moves on multiplane layers: push-in, pull-back, snap zoom, shake, whip pan; contact shadows | numpy/PIL (DepthFlow for single-image depth) |
 | `assemble.py` | Shots to 1080x1920 30fps MP4; whip era-cut, handprint portal, safe-zone captions | MoviePy, ffmpeg |
 | `voice.py` | Per-archetype voice chains from the spec, crowd builder from her takes, -14 LUFS master | Pedalboard, ffmpeg-normalize |
-| `qa.py` | Technical gate on the final MP4: encode, no fade-up, hook text by frame 1, 9:16 safe zone, cut rhythm, loop seam | rebuilt from iart-ai/tiktok-video-skills |
+| `qa.py` | Technical gate on the final MP4: encode, no fade-up, hook text by frame 1, 9:16 safe zone, cut rhythm, caption-vs-figure overlap, loop seam (only for videos marked to loop) | rebuilt from iart-ai/tiktok-video-skills |
+| `timing.py` | Fits each script line to her real takes: words/sec (syllables for gibberish), OVER / DEAD AIR / OK, new shot length | adapted from BusyBee3333 retention-pass |
 | `lipsync.py` | Rhubarb phonetic cues (gibberish-safe) to mouth shapes | Rhubarb |
 
 Demo: `python examples/prophet_demo.py <poses_dir> out.mp4` renders `docs/media/prophet-test.mp4` from three painted poses.

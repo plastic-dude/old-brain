@@ -59,3 +59,37 @@ def write_mp4(frames, out: str | Path, audio: str | None = None, fps: int = FPS)
     clip.write_videofile(str(out), codec="libx264", audio_codec="aac", preset="medium",
                          ffmpeg_params=["-crf", "18", "-pix_fmt", "yuv420p", "-movflags", "+faststart"], logger=None)
     return out
+
+
+def loop_tail(frames: list, n: int = 10) -> list:
+    """Blend the last n frames into frame 0 so the replay is seamless (optional per video)."""
+    first = frames[0].convert("RGB")
+    for i in range(n):
+        k = (i + 1) / n; j = len(frames) - n + i
+        frames[j] = Image.blend(frames[j].convert("RGB"), first, k * k * (3 - 2 * k))
+    return frames
+
+def text_box(text: str, y: int = 270, size: int = 60, max_w: int = 880, W: int = 1080):
+    """Where caption() will put this text (for overlap audits)."""
+    from PIL import ImageFont, ImageDraw
+    f = ImageFont.truetype("DejaVuSans-Bold.ttf", size); d = ImageDraw.Draw(Image.new("L", (1, 1)))
+    words, lines, cur = text.split(), [], ""
+    for w_ in words:
+        t = (cur + " " + w_).strip()
+        if d.textlength(t, font=f) <= max_w or not cur: cur = t
+        else: lines.append(cur); cur = w_
+    lines.append(cur); wmax = max(d.textlength(l, font=f) for l in lines)
+    return ((W - wmax) / 2, y, (W + wmax) / 2, y + len(lines) * size * 1.15)
+
+def audit_overlap(shot, text: str, fig_layers, step: float = 0.5, **cap) -> list:
+    """Every `step` seconds: does the caption hit a figure? (pairwise box test, like
+    BusyBee3333's 0.5 s overlap auditor). Returns [(seconds, overlap_px)]."""
+    from .camera import layer_box
+    tb = text_box(text, **cap); hits = []; s = 0.0
+    while s <= shot.duration + 1e-6:
+        for L in fig_layers:
+            fb = layer_box(L, shot, s / shot.duration)
+            ix = max(0, min(tb[2], fb[2]) - max(tb[0], fb[0])); iy = max(0, min(tb[3], fb[3]) - max(tb[1], fb[1]))
+            if ix * iy > 0: hits.append((round(s, 2), int(ix * iy)))
+        s += step
+    return hits
