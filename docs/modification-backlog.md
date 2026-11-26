@@ -21,3 +21,19 @@
 - [ ] Phonetic recognizer default (Stone Age gibberish)
 - [ ] Batch mode per line from the record-by-voice sheet, with JSON to the assembler
 - [ ] Restore rhubarb/lib/ from upstream at build time (excluded from the repo for size)
+
+## Done in oldbrain/ (2026-11-26)
+- [x] Pigment keyer replaces AnimatedDrawings' TorchServe detector for our art (white-eye aware, wall loops stay open)
+- [x] Procedural chalk outline + validator (spec rule)
+- [x] Camera presets matching bible section 4, multiplane parallax, contact shadows
+- [x] Whip era-cut and handprint portal transitions
+- [x] Parametric faces (lids, pupils, brows, mouths, FX) replacing dot eyes for acting
+- [x] Voice chains from spec presets; Denier shifted off the narrator's pitch
+
+## Next
+- [ ] AnimatedDrawings retarget on our cutouts (walk cycles from her phone video)
+- [ ] Depth Anything V2 Small layers for multiplane environments
+- [ ] LaMa hero plates
+- [ ] Face tweening (blinks, eye darts, slow-burn rage) and rhubarb-driven mouths on the new face
+- [ ] Mirror split-screen (Stone Age | Modern) shot type
+- [ ] PySceneDetect report on rival Shorts: cuts per second, shot lengths

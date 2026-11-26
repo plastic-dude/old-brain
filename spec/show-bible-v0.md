@@ -1,4 +1,4 @@
-# Old Brain Show Bible v0 (2026-11-26, draft for Sara)
+# Old Brain Show Bible v0 (2026-11-26, draft)
 
 ## 1. Faces
 Tiny dot-eye faces carry little, so faces are a small fixed set, readable at phone size.

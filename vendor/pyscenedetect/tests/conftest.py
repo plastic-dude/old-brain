@@ -1,0 +1,236 @@
+#
+#            PySceneDetect: Python-Based Video Scene Detector
+#   -------------------------------------------------------------------
+#     [  Site:    https://scenedetect.com                           ]
+#     [  Docs:    https://scenedetect.com/docs/                     ]
+#     [  Github:  https://github.com/Breakthrough/PySceneDetect/    ]
+#
+# Copyright (C) 2020 Brandon Castellano <http://www.bcastell.com>.
+# PySceneDetect is licensed under the BSD 3-Clause License; see the
+# included LICENSE file, or visit one of the above pages for details.
+#
+"""PySceneDetect Test Configuration
+
+This file includes all pytest configuration for running PySceneDetect's tests.
+
+These tests rely on the files in the tests/resources/ folder in the "resources" branch of
+the PySceneDetect git repository. These files can be checked out via git by running the
+following from the root of the repo:
+
+    git fetch --depth=1 https://github.com/Breakthrough/PySceneDetect.git refs/heads/resources:refs/remotes/origin/resources
+    git checkout refs/remotes/origin/resources -- tests/resources/
+    git reset
+
+Note that currently these tests create some temporary files which are not yet cleaned up.
+"""
+
+# TODO: Properly cleanup temporary files.
+
+import logging
+import os
+import typing as ty
+
+import pytest
+
+# Surface unhandled exceptions and KeyboardInterrupt as raw tracebacks during tests so pytest
+# (and any debugger) sees the original failure instead of the logger-formatted output the CLI
+# uses for end users. Read by `scenedetect.platform.DEBUG_MODE`. `setdefault` lets a developer
+# override (e.g. `SCENEDETECT_DEBUG=` to mimic end-user behavior in a specific test run).
+os.environ.setdefault("SCENEDETECT_DEBUG", "1")
+
+#
+# Helper Functions
+#
+
+
+def check_exists(path: ty.AnyStr) -> ty.AnyStr:
+    """Returns the absolute path to a (relative) path of a file that
+    should exist within the tests/ directory.
+
+    Throws FileNotFoundError if the file could not be found.
+    """
+    if not os.path.exists(path):
+        raise FileNotFoundError(
+            f"""
+Test video file ({path}) must be present to run test case. This file can be obtained by running the following commands from the root of the repository:
+
+git fetch --depth=1 https://github.com/Breakthrough/PySceneDetect.git refs/heads/resources:refs/remotes/origin/resources
+git checkout refs/remotes/origin/resources -- tests/resources/
+git reset
+"""
+        )
+    return path
+
+
+#
+# Pytest Hooks
+#
+
+
+def pytest_assertrepr_compare(op, left, right):
+    if isinstance(left, str) and isinstance(right, str) and op == "in":
+        return [
+            "Did not find expected output in test.",
+            "",
+            "Expected to find:",
+            "",
+            *left.splitlines(),
+            "",
+            "Actual output:",
+            "",
+            *right.splitlines(),
+        ]
+    return []
+
+
+#
+# Test Case Fixtures
+#
+
+
+@pytest.fixture(autouse=True)
+def no_logs_gte_error(caplog):
+    """Ensure no log messages with error severity or higher were reported during test execution."""
+    EXCLUDED_MODULES = set()
+    yield
+    errors = [
+        record
+        for record in caplog.get_records("call")
+        if record.levelno >= logging.ERROR and record.module not in EXCLUDED_MODULES
+    ]
+    assert not errors, "Test failed due to presence of one or more logs with ERROR severity."
+
+
+@pytest.fixture
+def test_video_file() -> str:
+    """Simple test video containing both fast cuts and fades/dissolves."""
+    return check_exists("tests/resources/testvideo.mp4")
+
+
+@pytest.fixture
+def test_movie_clip() -> str:
+    """Movie clip containing fast cuts."""
+    return check_exists("tests/resources/goldeneye.mp4")
+
+
+@pytest.fixture
+def test_vfr_video() -> str:
+    """Movie clip containing fast cut, but encoded as variable framerate."""
+    return check_exists("tests/resources/goldeneye-vfr.mp4")
+
+
+@pytest.fixture
+def test_vfr_drop3_video() -> str:
+    """Synthetic VFR video created from goldeneye.mp4 by dropping every 3rd frame.
+
+    Frame pattern: keeps frames where (n+1) % 3 != 0 (i.e. drops frames 2,5,8,...).
+    Resulting PTS durations alternate: 1001, 2002, 1001, 2002, ... (time_base=1/24000).
+    Nominal fps: 24000/1001. Average fps: ~16 fps. Duration: ~10s, 160 frames.
+    """
+    return check_exists("tests/resources/goldeneye-vfr-drop3.mp4")
+
+
+@pytest.fixture
+def test_no_pts_avi() -> str:
+    """First 480 frames of goldeneye.mp4 re-encoded with B-frames (libx264, -bf 3 -g 48) and
+    remuxed into an AVI, so its packets only carry decode timestamps (no PTS). See issue #590."""
+    return check_exists("tests/resources/issue-590-bframes.avi")
+
+
+@pytest.fixture
+def test_raw_h264() -> str:
+    """Same bitstream as `test_no_pts_avi` as a raw Annex-B H.264 elementary stream, which carries
+    no timestamps at all. See issue #590."""
+    return check_exists("tests/resources/issue-590-bframes.h264")
+
+
+@pytest.fixture
+def test_missing_pts_ts() -> str:
+    """`goldeneye-vfr-drop3.mp4` remuxed into MPEG-TS (`ffmpeg -c:v copy -f mpegts`), then the
+    PTS/DTS fields of the first six video PES packets, and of two in every seven packets after the
+    tenth, overwritten with PES header stuffing bytes (PTS_DTS_flags cleared, packet sizes
+    unchanged). After decoding, frames 1-4 carry no timestamps, frame 5 only a DTS, and later
+    frames sporadically lack their PTS, DTS or both. Frame times otherwise match the mp4 it was
+    remuxed from. See PR #592."""
+    return check_exists("tests/resources/issue-590-missing-pts.ts")
+
+
+@pytest.fixture
+def corrupt_video_file() -> str:
+    """Video containing a corrupted frame causing a decode failure."""
+    return check_exists("tests/resources/corrupt_frame.mp4")
+
+
+@pytest.fixture
+def rotated_video_file() -> str:
+    """Video containing a corrupted frame causing a decode failure."""
+    return check_exists("tests/resources/issue-134-rotate.mp4")
+
+
+@pytest.fixture
+def test_image_sequence() -> str:
+    """Path to a short image sequence (from counter.mp4)."""
+    return "tests/resources/counter/frame%03d.png"
+
+
+@pytest.fixture
+def test_fades_clip() -> str:
+    """Clip containing fades in/out."""
+    return check_exists("tests/resources/fades.mp4")
+
+
+@pytest.fixture
+def delayed_start_video() -> str:
+    """Video with a nonzero stream start time (1.075s edit-list offset). Created from
+    fades.mp4 via: ffmpeg -itsoffset 1.075 -i fades.mp4 -t 2 -c:v copy -an delayed_start.mp4"""
+    return check_exists("tests/resources/delayed_start.mp4")
+
+
+@pytest.fixture
+def auto_close():
+    """Registers VideoStreams (or anything closeable) for deterministic cleanup at test end.
+
+    Usage: ``video = auto_close(open_video(path))``. Returns its argument unchanged.
+    Closing test-owned streams while the interpreter is healthy avoids ResourceWarnings
+    (unclosed PyAV containers / file handles) finalizing during interpreter shutdown,
+    where native teardown can crash the process exit code (windows-latest CI flake).
+    """
+    from tests.helpers import close_video_stream
+
+    streams = []
+
+    def _register(stream):
+        streams.append(stream)
+        return stream
+
+    yield _register
+    for stream in streams:
+        close_video_stream(stream)
+
+
+def pytest_unconfigure(config):
+    """Diagnostic for a windows-latest CI flake (silent exit 1 after a green run):
+    report any non-main threads still alive at session end. Leaked threads keep
+    VideoStreams alive into interpreter shutdown, where native teardown can crash
+    the process exit code. tqdm's global monitor singleton is expected and ignored."""
+    import gc
+    import sys
+    import threading
+
+    # Finalize any lingering test-owned objects (e.g. av containers kept alive by reference
+    # cycles) while the interpreter is still healthy, instead of at interpreter shutdown.
+    gc.collect()
+
+    leftover = [
+        t
+        for t in threading.enumerate()
+        if t is not threading.main_thread() and t.name != "tqdm_monitor"
+    ]
+    for thread in leftover:
+        frame = sys._current_frames().get(thread.ident) if thread.ident else None
+        location = f"{frame.f_code.co_filename}:{frame.f_lineno}" if frame else "unknown"
+        print(
+            f"WARNING: thread still alive at exit: {thread.name} "
+            f"(daemon={thread.daemon}) at {location}",
+            file=sys.stderr,
+        )

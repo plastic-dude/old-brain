@@ -1,0 +1,2090 @@
+#
+#            PySceneDetect: Python-Based Video Scene Detector
+#   -------------------------------------------------------------------
+#     [  Site:    https://scenedetect.com                           ]
+#     [  Docs:    https://scenedetect.com/docs/                     ]
+#     [  Github:  https://github.com/Breakthrough/PySceneDetect/    ]
+#
+# Copyright (C) 2022 Brandon Castellano <http://www.bcastell.com>.
+# PySceneDetect is licensed under the BSD 3-Clause License; see the
+# included LICENSE file, or visit one of the above pages for details.
+#
+
+import os
+import subprocess
+
+# These tests validate that the CLI itself functions correctly, mainly based on the return
+# return code from the process. We do not yet check for correctness of the output, just a
+# successful invocation of the command (i.e. no exceptions/errors).
+# TODO: Add some basic correctness tests to validate the output (just look for the
+# last expected log message or extract # of scenes). Might need to refactor the test cases
+# since we need to calculate the output file names for commands that write to disk.
+# TODO: Define error/exit codes explicitly. Right now these tests only verify that the
+# exit code is zero or nonzero.
+# TODO: These tests are very expensive since they spin up new Python interpreters.
+# Move most of these test cases (e.g. argument validation) to ones that interface directly
+# with the scenedetect._cli module. Click also supports unit testing directly, so we should
+# probably use that instead of spinning up new subprocesses for each run of the controller.
+# That will also allow splitting up the validation of argument parsing logic from the controller
+# logic by creating a CLI context with the desired parameters.
+# TODO: Missing tests for --min-scene-len and --drop-short-scenes.
+import sys
+from pathlib import Path
+from types import SimpleNamespace
+
+import click
+import cv2
+import numpy as np
+import pytest
+
+import scenedetect
+from scenedetect._cli.config import ConfigLoadFailure, ConfigRegistry
+from scenedetect._cli.context import CliContext
+from scenedetect.output import is_ffmpeg_available, is_mkvmerge_available
+from scenedetect.platform import StrPath
+from tests.helpers import invoke_cli
+
+SCENEDETECT_CMD = sys.executable + " -m scenedetect"
+
+ALL_DETECTORS = [
+    "detect-content",
+    "detect-threshold",
+    "detect-adaptive",
+    "detect-hist",
+    "detect-hash",
+]
+ALL_BACKENDS = ["opencv", "pyav"]
+
+DEFAULT_VIDEO_PATH = "tests/resources/goldeneye.mp4"
+DEFAULT_VIDEO_NAME = Path(DEFAULT_VIDEO_PATH).stem
+DEFAULT_BACKEND = "opencv"
+DEFAULT_STATSFILE = "statsfile.csv"
+DEFAULT_TIME = "-s 2s -d 4s"  # Seek forward a bit but limit the amount we process.
+DEFAULT_DETECTOR = "detect-content"
+DEFAULT_CONFIG_FILE = "scenedetect.cfg"  # Ensure we default to a "blank" config file.
+DEFAULT_NUM_SCENES = 2  # Number of scenes we expect to detect given above params.
+DEFAULT_FFMPEG_ARGS = (
+    "-vf crop=128:128:0:0 -map 0:v:0 -c:v libx264 -preset ultrafast -qp 0 -tune zerolatency"
+)
+"""Only encodes a small crop of the frame and tuned for performance to speed up tests."""
+
+
+def invoke_scenedetect(
+    args: str = "",
+    output_dir: StrPath | None = None,
+    config_file: str | None = DEFAULT_CONFIG_FILE,
+    **kwargs,
+):
+    """Invokes the scenedetect CLI with the specified arguments and returns the exit code.
+    The kwargs are passed to the args format method, for example:
+
+        invoke_scenedetect('-i {VIDEO} {DETECTOR}', VIDEO='file.mp4', DETECTOR='detect-content')
+
+    Providing `output_dir` and `config_file` set -o/--output and -c/--config, respectively.
+
+    Default values are set for any arguments found in the command:
+        VIDEO -> VIDEO_PATH
+        VIDEO_NAME -> VIDEO_NAME
+        DETECTOR -> DEFAULT_DETECTOR
+        TIME -> DEFAULT_TIME
+        STATS -> DEFAULT_STATSFILE
+        BACKEND -> DEFAULT_BACKEND
+        CONFIG_FILE -> DEFAULT_CONFIG_FILE
+    """
+    value_dict = dict(
+        VIDEO=DEFAULT_VIDEO_PATH,
+        VIDEO_NAME=DEFAULT_VIDEO_NAME,
+        TIME=DEFAULT_TIME,
+        DETECTOR=DEFAULT_DETECTOR,
+        STATS=DEFAULT_STATSFILE,
+        BACKEND=DEFAULT_BACKEND,
+    )
+    value_dict.update(**kwargs)
+    command = SCENEDETECT_CMD
+    if output_dir:
+        command += f" -o {output_dir}"
+    if config_file:
+        command += f" -c {config_file}"
+    command += " " + args.format(**value_dict)
+    return subprocess.call(command.strip().split(" "))
+
+
+def test_cli_no_args():
+    """Test `scenedetect` command invoked without any arguments."""
+    assert invoke_scenedetect(config_file=None) == 0
+
+
+def test_cli_default_detector():
+    """Test `scenedetect` command invoked without a detector."""
+    assert invoke_scenedetect("-i {VIDEO} time {TIME}", config_file=None) == 0
+
+
+def test_cli_crop():
+    """Test --crop functionality."""
+    assert invoke_scenedetect("-i {VIDEO} --crop 0 0 256 256 time {TIME}", config_file=None) == 0
+
+
+def test_cli_crop_rejects_invalid():
+    """Test --crop rejects invalid options."""
+    # Outside of video bounds
+    assert (
+        invoke_scenedetect("-i {VIDEO} --crop 4000 0 8000 100 time {TIME}", config_file=None) != 1
+    )
+    assert (
+        invoke_scenedetect("-i {VIDEO} --crop 0 4000 100 8000 time {TIME}", config_file=None) != 1
+    )
+    # Negative numbers
+    assert invoke_scenedetect("-i {VIDEO} --crop 0 0 -256 -256 time {TIME}", config_file=None) != 1
+
+
+@pytest.mark.parametrize(
+    ("config", "cli_args", "expected_auto", "expected_downscale"),
+    [
+        ("", [], True, 1),
+        ("", ["-d", "0"], True, 1),
+        ("", ["--downscale", "1"], False, 1),
+        ("", ["-d", "2"], False, 2),
+        ("downscale = 0", [], True, 1),
+        ("downscale = 1", [], False, 1),
+        ("downscale = 3", [], False, 3),
+        # CLI -d 0 overrides a manual downscale factor in the config file back to auto.
+        ("downscale = 3", ["-d", "0"], True, 1),
+        ("downscale = 0", ["-d", "2"], False, 2),
+    ],
+)
+def test_cli_downscale(
+    tmp_path: Path,
+    config: str,
+    cli_args: list[str],
+    expected_auto: bool,
+    expected_downscale: int,
+):
+    """Test `-d`/`--downscale` on the CLI and `downscale` in `[global]`, including `0` for auto."""
+    from click.testing import CliRunner
+
+    from scenedetect._cli import scenedetect as scenedetect_cli
+    from scenedetect._cli.context import CliContext
+    from tests.helpers import close_video_stream
+
+    config_path = tmp_path / "scenedetect.cfg"
+    config_path.write_text(f"[global]\n{config}\n")
+    context = CliContext()
+    try:
+        result = CliRunner().invoke(
+            scenedetect_cli,
+            ["-c", str(config_path), "-i", DEFAULT_VIDEO_PATH, *cli_args, "time", "-e", "1"],
+            obj=context,
+        )
+        assert result.exit_code == 0, result.output
+        assert context.scene_manager is not None
+        assert context.scene_manager.auto_downscale is expected_auto
+        assert context.scene_manager.downscale == expected_downscale
+    finally:
+        if context.video_stream is not None:
+            close_video_stream(context.video_stream)
+
+
+@pytest.mark.parametrize(
+    ("config", "cli_args"),
+    [
+        ("", ["-d", "-1"]),
+        ("downscale = -1", []),
+    ],
+)
+def test_cli_downscale_rejects_negative(tmp_path: Path, config: str, cli_args: list[str]):
+    """Negative downscale values must be rejected on both the CLI and in the config file."""
+    config_path = tmp_path / "scenedetect.cfg"
+    config_path.write_text(f"[global]\n{config}\n")
+    exit_code, output = invoke_cli(
+        ["-c", str(config_path), "-i", DEFAULT_VIDEO_PATH, *cli_args, "time", "-e", "1"]
+    )
+    assert exit_code != 0
+    assert "Downscale factor must be a positive integer >= 1!" in output
+
+
+@pytest.mark.parametrize("info_command", ["help", "about", "version"])
+def test_cli_info_command(info_command):
+    """Test `scenedetect` info commands (e.g. help, about)."""
+    assert invoke_scenedetect(info_command) == 0
+
+
+def test_cli_time_validate_options():
+    """Validate behavior of setting parameters via the `time` command."""
+    base_command = "-i {VIDEO} time {TIME} {DETECTOR}"
+    # Ensure cannot set end and duration together.
+    assert invoke_scenedetect(base_command, TIME="-s 2.0 -d 6.0 -e 8.0") != 0
+    assert invoke_scenedetect(base_command, TIME="-s 2.0 -e 8.0 -d 6.0 ") != 0
+
+
+def test_cli_time_end():
+    """Validate processed frames without start time being set. End time is the end frame to stop at,
+    but with duration, we stop at start + duration - 1."""
+    EXPECTED = """[PySceneDetect] Scene List:
+-----------------------------------------------------------------------
+ | Scene # | Start Frame |  Start Time  |  End Frame  |   End Time   |
+-----------------------------------------------------------------------
+ |      1  |           1 | 00:00:00.000 |          10 | 00:00:00.417 |
+-----------------------------------------------------------------------
+"""
+    TEST_CASES = [
+        "time --end 10",
+        "time --end 00:00:00.417",
+        "time --end 0.417",
+        "time --duration 10",
+        "time --duration 00:00:00.417",
+        "time --duration 0.417",
+    ]
+    for test_case in TEST_CASES:
+        output = subprocess.check_output(
+            [
+                *SCENEDETECT_CMD.split(" "),
+                "-i",
+                DEFAULT_VIDEO_PATH,
+                "-m",
+                "0",
+                "detect-content",
+                "list-scenes",
+                "-n",
+                *test_case.split(),
+            ],
+            text=True,
+        )
+        assert EXPECTED in output, test_case
+
+
+def test_cli_time_start():
+    """Validate processed frames with both start and end/duration set. End time is the end frame to
+    stop at, but with duration, we stop at start + duration - 1."""
+    EXPECTED = """[PySceneDetect] Scene List:
+-----------------------------------------------------------------------
+ | Scene # | Start Frame |  Start Time  |  End Frame  |   End Time   |
+-----------------------------------------------------------------------
+ |      1  |           4 | 00:00:00.125 |          10 | 00:00:00.417 |
+-----------------------------------------------------------------------
+"""
+    TEST_CASES = [
+        "time --start 4 --end 10",
+        "time --start 4 --end 00:00:00.417",
+        "time --start 4 --end 0.417",
+        "time --start 4 --duration 7",
+        "time --start 4 --duration 0.292",
+        "time --start 4 --duration 00:00:00.292",
+    ]
+    for test_case in TEST_CASES:
+        output = subprocess.check_output(
+            [
+                *SCENEDETECT_CMD.split(" "),
+                "-i",
+                DEFAULT_VIDEO_PATH,
+                "-m",
+                "0",
+                "detect-content",
+                "list-scenes",
+                "-n",
+                *test_case.split(),
+            ],
+            text=True,
+        )
+        assert EXPECTED in output, test_case
+
+
+def test_cli_time_scene_boundary():
+    """Validate frames that are processed when crossing a scene boundary. End time is the end frame
+    to stop at, but with duration, we stop at start + duration - 1."""
+    # -------------------------------------------------------------------------------------
+    # |   Scene   |   Frame    |       PTS        |  PTS + Duration  |     Annotation     |
+    # -------------------------------------------------------------------------------------
+    # |     1     |     86     |   00:00:03.545   |   00:00:03.587   |    Start Frame     |
+    # |     1     |     87     |   00:00:03.587   |   00:00:03.629   |                    |
+    # |     1     |     88     |   00:00:03.629   |   00:00:03.670   |                    |
+    # |     1     |     89     |   00:00:03.670   |   00:00:03.712   |                    |
+    # |     1     |     90     |   00:00:03.712   |   00:00:03.754   |    Scene 1 End     |
+    # |     2     |     91     |   00:00:03.754   |   00:00:03.795   |   Scene 2 Start    |
+    # |     2     |     92     |   00:00:03.795   |   00:00:03.837   |                    |
+    # |     2     |     93     |   00:00:03.837   |   00:00:03.879   |                    |
+    # |     2     |     94     |   00:00:03.879   |   00:00:03.921   |                    |
+    # |     2     |     95     |   00:00:03.921   |   00:00:03.962   |                    |
+    # |     2     |     96     |   00:00:03.962   |   00:00:04.004   |     End Frame      |
+    # -------------------------------------------------------------------------------------
+    EXPECTED = """
+-----------------------------------------------------------------------
+ | Scene # | Start Frame |  Start Time  |  End Frame  |   End Time   |
+-----------------------------------------------------------------------
+ |      1  |          86 | 00:00:03.545 |          90 | 00:00:03.754 |
+ |      2  |          91 | 00:00:03.754 |          96 | 00:00:04.004 |
+-----------------------------------------------------------------------
+"""
+    # End time is the end frame to stop at, but with duration, we stop at start + duration - 1.
+    TEST_CASES = [
+        "time --start 86 --end 96",
+        "time --start 00:00:03.545 --end 00:00:04.004",
+        "time --start 3.545 --end 4.004",
+        "time --start 86 --duration 11",
+        "time --start 00:00:03.545 --duration 00:00:00.459",
+        "time --start 3.545 --duration 0.459",
+    ]
+    for test_case in TEST_CASES:
+        output = subprocess.check_output(
+            [
+                *SCENEDETECT_CMD.split(" "),
+                "-i",
+                DEFAULT_VIDEO_PATH,
+                "-m",
+                "0",
+                "detect-content",
+                "list-scenes",
+                "-n",
+                *test_case.split(),
+            ],
+            text=True,
+        )
+        assert EXPECTED in output, test_case
+
+
+@pytest.mark.parametrize("backend", ["opencv", "pyav", "moviepy"])
+def test_cli_time_start_past_end_of_video(backend: str):
+    """Start time past EOF must fail the same way on every backend (issue #380)."""
+    exit_code, output = invoke_cli(["-i", DEFAULT_VIDEO_PATH, "-b", backend, "time", "-s", "10000"])
+    assert exit_code != 0, output
+    assert "beyond the end of the video" in output
+    assert "multiple audio tracks" not in output
+    assert "Detected 1 scenes" not in output
+
+
+def test_cli_time_end_of_video():
+    """Validate frame number/timecode alignment at the end of the video. The end timecode includes
+    presentation time and therefore should represent the full length of the video."""
+    output = subprocess.check_output(
+        [
+            *SCENEDETECT_CMD.split(" "),
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "detect-content",
+            "list-scenes",
+            "-n",
+            "time",
+            "-s",
+            "1872",
+        ],
+        text=True,
+    )
+    assert (
+        """
+-----------------------------------------------------------------------
+ | Scene # | Start Frame |  Start Time  |  End Frame  |   End Time   |
+-----------------------------------------------------------------------
+ |      1  |        1872 | 00:01:18.036 |        1916 | 00:01:19.913 |
+ |      2  |        1917 | 00:01:19.913 |        1966 | 00:01:21.999 |
+ |      3  |        1967 | 00:01:21.999 |        1980 | 00:01:22.582 |
+-----------------------------------------------------------------------
+"""
+        in output
+    )
+    assert "00:01:19.913,00:01:21.999" in output
+
+
+@pytest.mark.parametrize("detector_command", ALL_DETECTORS)
+def test_cli_detector(detector_command: str):
+    """Test each detection algorithm."""
+    # Ensure all detectors work without a statsfile.
+    assert invoke_scenedetect("-i {VIDEO} time {TIME} {DETECTOR}", DETECTOR=detector_command) == 0
+
+
+@pytest.mark.parametrize("detector_command", ALL_DETECTORS)
+def test_cli_detector_with_stats(tmp_path, detector_command: str):
+    """Test each detection algorithm with a statsfile."""
+    # Run with a statsfile twice to ensure the file is populated with those metrics and reloaded.
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} -s {STATS} time {TIME} {DETECTOR}",
+            output_dir=tmp_path,
+            DETECTOR=detector_command,
+        )
+        == 0
+    )
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} -s {STATS} time {TIME} {DETECTOR}",
+            output_dir=tmp_path,
+            DETECTOR=detector_command,
+        )
+        == 0
+    )
+    # TODO: Check for existence of statsfile by trying to load it with the library,
+    # and ensuring that we got some frames.
+
+
+@pytest.mark.parametrize(
+    "option",
+    ["--frame-rate", "--framerate", "-f"],
+)
+def test_cli_frame_rate_aliases(option: str):
+    """All frame-rate aliases are accepted by the CLI."""
+    exit_code, _ = invoke_cli(
+        ["-i", DEFAULT_VIDEO_PATH, option, "30.0", "time", "-s", "2s", "-d", "4s"]
+    )
+    assert exit_code == 0
+
+
+@pytest.mark.parametrize(
+    "cli_args",
+    [
+        ["detect-content", "-k", "1"],
+        ["detect-content", "-k", "4"],
+        ["detect-content", "-k", "-3"],
+        ["detect-adaptive", "-k", "1"],
+        ["detect-adaptive", "-k", "-2"],
+    ],
+)
+def test_cli_kernel_size_rejects_invalid(cli_args: list[str]):
+    """Kernel sizes below 3 or even must be rejected with a usage error, not a traceback."""
+    exit_code, output = invoke_cli(["-i", DEFAULT_VIDEO_PATH, *cli_args, "time", "-e", "1"])
+    assert exit_code != 0
+    assert "Kernel size must be an odd integer >= 3, or -1 for auto." in output
+
+
+@pytest.mark.parametrize("command", ["detect-content", "detect-adaptive"])
+@pytest.mark.parametrize("kernel_size", ["3", "-1"])
+def test_cli_kernel_size_accepts_valid(command: str, kernel_size: str):
+    """An odd kernel size >= 3 works, and -1 means auto, the same as in a config file."""
+    exit_code, _ = invoke_cli(
+        ["-i", DEFAULT_VIDEO_PATH, command, "-k", kernel_size, "time", "-e", "1"]
+    )
+    assert exit_code == 0
+
+
+@pytest.mark.parametrize("command", ["detect-content", "detect-adaptive"])
+def test_cli_kernel_size_config_file_rejects_one(tmp_path: Path, command: str):
+    """A config file kernel-size of 1 must be rejected when loading, like other invalid sizes."""
+    config_path = tmp_path.joinpath("config.cfg")
+    config_path.write_text(f"[{command}]\nkernel-size = 1\n")
+    with pytest.raises(ConfigLoadFailure) as ex:
+        ConfigRegistry(str(config_path))
+    assert any("odd integer >= 3" in message for _, message in ex.value.init_log)
+
+
+@pytest.mark.parametrize("command", ["detect-content", "detect-adaptive"])
+def test_cli_weights_rejects_all_zero(command: str):
+    """All-zero weights must give a usage error instead of NaN frame scores (#612)."""
+    exit_code, output = invoke_cli(
+        ["-i", DEFAULT_VIDEO_PATH, command, "-w", "0", "0", "0", "0", "time", "-e", "1"]
+    )
+    assert exit_code != 0
+    assert "At least one weight must be non-zero." in output
+
+
+@pytest.mark.parametrize("command", ["detect-content", "detect-adaptive"])
+def test_cli_weights_config_file_rejects_all_zero(tmp_path: Path, command: str):
+    """A config file with all-zero weights must be rejected when loading (#612)."""
+    config_path = tmp_path.joinpath("config.cfg")
+    config_path.write_text(f"[{command}]\nweights = 0, 0, 0, 0\n")
+    with pytest.raises(ConfigLoadFailure) as ex:
+        ConfigRegistry(str(config_path))
+    assert any("non-zero" in message for _, message in ex.value.init_log)
+
+
+@pytest.mark.parametrize("command", ["detect-content", "detect-adaptive"])
+@pytest.mark.parametrize("bad_weight", ["-1", "nan", "inf"])
+def test_cli_weights_rejects_negative_or_non_finite(command: str, bad_weight: str):
+    exit_code, output = invoke_cli(
+        ["-i", DEFAULT_VIDEO_PATH, command, "-w", "1", "1", bad_weight, "0", "time", "-e", "1"]
+    )
+    assert exit_code != 0
+    assert "Weights must be finite and non-negative." in output
+
+
+@pytest.mark.parametrize("command", ["detect-content", "detect-adaptive"])
+def test_cli_weights_config_file_rejects_negative(tmp_path: Path, command: str):
+    config_path = tmp_path.joinpath("config.cfg")
+    config_path.write_text(f"[{command}]\nweights = 1, 1, -1, 0\n")
+    with pytest.raises(ConfigLoadFailure) as ex:
+        ConfigRegistry(str(config_path))
+    assert any("non-negative" in message for _, message in ex.value.init_log)
+
+
+@pytest.mark.parametrize(
+    "cli_args",
+    [
+        ["detect-adaptive", "--frame-window", "0"],
+        ["detect-adaptive", "--frame-window", "-3"],
+        ["detect-content", "save-images", "--num-images", "0"],
+        ["detect-content", "save-images", "--num-images", "-1"],
+        ["detect-content", "save-images", "--scale", "-1"],
+        ["detect-content", "save-images", "--height", "-5"],
+        ["detect-content", "save-images", "--width", "-5"],
+    ],
+)
+def test_cli_option_out_of_range(tmp_path: Path, cli_args: list[str]):
+    """Values out of an option's range must give a usage error, not a traceback."""
+    exit_code, output = invoke_cli(
+        ["-i", DEFAULT_VIDEO_PATH, "-o", str(tmp_path), "time", "-e", "1", *cli_args]
+    )
+    assert exit_code == 2
+    assert "Traceback" not in output
+    assert "Invalid value" in output
+
+
+@pytest.mark.parametrize(
+    ("command", "option"),
+    [
+        ("detect-adaptive", "frame-window = 0"),
+        ("save-images", "num-images = 0"),
+        ("save-images", "scale = -1"),
+        ("save-images", "height = -5"),
+        ("save-images", "width = -5"),
+    ],
+)
+def test_cli_config_file_option_out_of_range(tmp_path: Path, command: str, option: str):
+    """A config file value out of range must be rejected when loading."""
+    config_path = tmp_path.joinpath("config.cfg")
+    config_path.write_text(f"[{command}]\n{option}\n")
+    with pytest.raises(ConfigLoadFailure) as ex:
+        ConfigRegistry(str(config_path))
+    assert any("Value must be" in message for _, message in ex.value.init_log)
+
+
+@pytest.mark.parametrize(
+    ("options", "succeeds"),
+    [
+        (["--frame-rate", "30.0", "--framerate", "0"], False),
+        (["--framerate", "0", "--frame-rate", "30.0"], True),
+    ],
+)
+def test_cli_frame_rate_aliases_last_value_wins(options: list[str], succeeds: bool):
+    """When a frame-rate option is repeated, only the last value is validated and used."""
+    exit_code, _ = invoke_cli(["-i", DEFAULT_VIDEO_PATH, *options, "time", "-s", "2s", "-d", "4s"])
+    assert (exit_code == 0) is succeeds
+
+
+def test_cli_framerate_alias_is_visible():
+    """Help shows all frame-rate aliases as one option."""
+    exit_code, output = invoke_cli(["--help"])
+
+    assert exit_code == 0
+    assert "-f, --frame-rate, --framerate FPS" in output
+
+
+def test_cli_min_scene_len_accepts_all_timecode_forms(tmp_path: Path):
+    """`--min-scene-len` (and equivalent options) must accept frames, seconds, and timecodes
+    in v0.7 per the changelog. The four forms below all resolve to ~20 frames at 23.976 fps
+    and must produce byte-identical scene lists."""
+    # 20 frames @ 23.976 fps = 0.8341... s, which rounds to the same nearest frame regardless
+    # of which form is parsed.
+    forms = ["20", "0.834", "0.834s", "00:00:00.834"]
+    outputs = []
+    for form in forms:
+        out = tmp_path / f"scenes_{form.replace(':', '_')}.csv"
+        exit_code, _ = invoke_cli(
+            [
+                "-i",
+                DEFAULT_VIDEO_PATH,
+                "-o",
+                str(tmp_path),
+                "time",
+                "-s",
+                "2s",
+                "-d",
+                "4s",
+                "detect-content",
+                "--min-scene-len",
+                form,
+                "list-scenes",
+                "-f",
+                out.name,
+                "-q",  # suppress stdout printing
+            ],
+        )
+        assert exit_code == 0, f"--min-scene-len {form!r} rejected"
+        assert out.exists(), f"--min-scene-len {form!r} did not produce {out}"
+        outputs.append((form, out.read_text()))
+    # All forms must produce the same scene list.
+    base_form, base_csv = outputs[0]
+    for form, csv in outputs[1:]:
+        assert csv == base_csv, (
+            f"Scene list differs between --min-scene-len {base_form!r} and {form!r}"
+        )
+
+
+def test_cli_list_scenes(tmp_path: Path):
+    """Test `list-scenes` command."""
+    exit_code, _ = invoke_cli(
+        [
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "-o",
+            str(tmp_path),
+            "time",
+            "-s",
+            "2s",
+            "-d",
+            "4s",
+            "detect-content",
+            "list-scenes",
+        ]
+    )
+    assert exit_code == 0
+    output_path = tmp_path.joinpath(f"{DEFAULT_VIDEO_NAME}-Scenes.csv")
+    assert os.path.exists(output_path)
+    EXPECTED_CSV_OUTPUT = """Timecode List:,00:00:03.754
+Scene Number,Start Frame,Start Timecode,Start Time (seconds),End Frame,End Timecode,End Time (seconds),Length (frames),Length (timecode),Length (seconds)
+1,49,00:00:02.002,2.002,90,00:00:03.754,3.754,42,00:00:01.752,1.752
+2,91,00:00:03.754,3.754,144,00:00:06.006,6.006,54,00:00:02.252,2.252
+"""
+    assert output_path.read_text() == EXPECTED_CSV_OUTPUT
+
+
+def test_cli_list_scenes_skip_cuts(tmp_path: Path):
+    """Test `list-scenes` command with the -s/--skip-cuts option for RFC 4180 compliance."""
+    # Regular invocation
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} time {TIME} {DETECTOR} list-scenes -s",
+            output_dir=tmp_path,
+        )
+        == 0
+    )
+    output_path = tmp_path.joinpath(f"{DEFAULT_VIDEO_NAME}-Scenes.csv")
+    assert os.path.exists(output_path)
+    EXPECTED_CSV_OUTPUT = """Scene Number,Start Frame,Start Timecode,Start Time (seconds),End Frame,End Timecode,End Time (seconds),Length (frames),Length (timecode),Length (seconds)
+1,49,00:00:02.002,2.002,90,00:00:03.754,3.754,42,00:00:01.752,1.752
+2,91,00:00:03.754,3.754,144,00:00:06.006,6.006,54,00:00:02.252,2.252
+"""
+    assert output_path.read_text() == EXPECTED_CSV_OUTPUT
+
+
+def test_cli_list_scenes_no_output(tmp_path: Path):
+    """Test `list-scenes` command with the -n flag."""
+    output_path = tmp_path.joinpath(f"{DEFAULT_VIDEO_NAME}-Scenes.csv")
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} time {TIME} {DETECTOR} list-scenes -n",
+            output_dir=tmp_path,
+        )
+        == 0
+    )
+    assert not os.path.exists(output_path)
+
+
+def test_cli_list_scenes_custom_delimiter(tmp_path: Path):
+    """Test `list-scenes` command with custom delimiters set in a config file."""
+    config_path = tmp_path.joinpath("config.cfg")
+    config_path.write_text("""
+[list-scenes]
+col-separator = |
+row-separator = \\t
+""")
+    assert (
+        invoke_scenedetect(
+            f"-i {{VIDEO}} -c {config_path} time {{TIME}} {{DETECTOR}} list-scenes",
+            output_dir=tmp_path,
+        )
+        == 0
+    )
+    output_path = tmp_path.joinpath(f"{DEFAULT_VIDEO_NAME}-Scenes.csv")
+    assert os.path.exists(output_path)
+    EXPECTED_CSV_OUTPUT = """Timecode List:,00:00:03.754
+Scene Number,Start Frame,Start Timecode,Start Time (seconds),End Frame,End Timecode,End Time (seconds),Length (frames),Length (timecode),Length (seconds)
+1,49,00:00:02.002,2.002,90,00:00:03.754,3.754,42,00:00:01.752,1.752
+2,91,00:00:03.754,3.754,144,00:00:06.006,6.006,54,00:00:02.252,2.252
+"""
+    EXPECTED_CSV_OUTPUT = EXPECTED_CSV_OUTPUT.replace(",", "|").replace("\n", "\t")
+    assert output_path.read_text() == EXPECTED_CSV_OUTPUT
+
+
+def test_cli_list_scenes_rejects_multichar_col_separator(tmp_path: Path):
+    """Test `list-scenes` command with custom delimiters set in a config file."""
+    config_path = tmp_path.joinpath("config.cfg")
+    config_path.write_text("""
+[list-scenes]
+col-separator = ||
+""")
+    assert (
+        invoke_scenedetect(
+            f"-i {{VIDEO}} -c {config_path} time {{TIME}} {{DETECTOR}} list-scenes",
+            output_dir=tmp_path,
+        )
+        != 0
+    )
+    output_path = tmp_path.joinpath(f"{DEFAULT_VIDEO_NAME}-Scenes.csv")
+    assert not os.path.exists(output_path)
+
+
+@pytest.mark.skipif(condition=not is_ffmpeg_available(), reason="ffmpeg is not available")
+def test_cli_split_video_ffmpeg(tmp_path: Path):
+    """Test `split-video` command using ffmpeg."""
+
+    # Assumption: The default filename format is VIDEO_NAME-Scene-SCENE_NUMBER.
+    command = f"{SCENEDETECT_CMD} -i {DEFAULT_VIDEO_PATH} -o {tmp_path} time {DEFAULT_TIME} {DEFAULT_DETECTOR} split-video -a".split(
+        " "
+    )
+    command.append(DEFAULT_FFMPEG_ARGS)
+    assert subprocess.call(command) == 0
+    entries = sorted(tmp_path.glob(f"{DEFAULT_VIDEO_NAME}-Scene-*"))
+    assert len(entries) == DEFAULT_NUM_SCENES, entries
+    [entry.unlink() for entry in entries]
+
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} -s {STATS} time {TIME} {DETECTOR} split-video -c", output_dir=tmp_path
+        )
+        == 0
+    )
+    entries = sorted(tmp_path.glob(f"{DEFAULT_VIDEO_NAME}-Scene-*"))
+    assert len(entries) == DEFAULT_NUM_SCENES
+    [entry.unlink() for entry in entries]
+
+    command += ["-f", "abc$VIDEO_NAME-123$SCENE_NUMBER"]
+    assert subprocess.call(command) == 0
+    entries = sorted(tmp_path.glob(f"abc{DEFAULT_VIDEO_NAME}-123*"))
+    assert len(entries) == DEFAULT_NUM_SCENES, entries
+    [entry.unlink() for entry in entries]
+
+    # -a/--args and -c/--copy are mutually exclusive, so this command should fail (return nonzero)
+    assert invoke_scenedetect(
+        '-i {VIDEO} {DETECTOR} split-video -c -a "-c:v libx264"',
+        output_dir=tmp_path,
+    )
+
+
+@pytest.mark.skipif(condition=not is_mkvmerge_available(), reason="mkvmerge is not available")
+def test_cli_split_video_mkvmerge(tmp_path: Path):
+    """Test `split-video` command using mkvmerge."""
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} -s {STATS} time {TIME} {DETECTOR} split-video -m", output_dir=tmp_path
+        )
+        == 0
+    )
+    for scene in range(DEFAULT_NUM_SCENES):
+        path = tmp_path / (Path(DEFAULT_VIDEO_PATH).stem + f"-Scene-{1 + scene:03d}.mkv")
+        path.unlink(missing_ok=False)
+    # If only one scene (just using a few frames), should keep same output template.
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} -s {STATS} time -e 3 {DETECTOR} split-video -m", output_dir=tmp_path
+        )
+        == 0
+    )
+    path = tmp_path / (Path(DEFAULT_VIDEO_PATH).stem + "-Scene-001.mkv")
+    path.unlink(missing_ok=False)
+    # -m takes precedence over -c
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} -s {STATS} time {TIME} {DETECTOR} split-video -m -c", output_dir=tmp_path
+        )
+        == 0
+    )
+    # Custom filename format
+    for scene in range(DEFAULT_NUM_SCENES):
+        path = tmp_path / (Path(DEFAULT_VIDEO_PATH).stem + f"-Scene-{1 + scene:03d}.mkv")
+        path.unlink(missing_ok=False)
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} -s {STATS} time {TIME} {DETECTOR} split-video -m -f test$VIDEO_NAME",
+            output_dir=tmp_path,
+        )
+        == 0
+    )
+    for scene in range(DEFAULT_NUM_SCENES):
+        path = tmp_path / ("test" + Path(DEFAULT_VIDEO_PATH).stem + f"-{1 + scene:03d}.mkv")
+        path.unlink(missing_ok=False)
+    # -a/--args and -m/--mkvmerge are mutually exclusive
+    assert invoke_scenedetect(
+        '-i {VIDEO} -s {STATS} time {TIME} {DETECTOR} split-video -m -a "-c:v libx264"',
+        output_dir=tmp_path,
+    )
+
+
+def test_cli_save_images(tmp_path: Path):
+    """Test `save-images` command."""
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} -s {STATS} time {TIME} {DETECTOR} save-images", output_dir=tmp_path
+        )
+        == 0
+    )
+    images = [image for image in tmp_path.glob("*.jpg")]
+    # Should detect two scenes and generate 3 images per scene with above params.
+    assert len(images) == 6
+    # Open one of the created images and make sure it has the correct resolution.
+    image = cv2.imread(str(images[0]))
+    assert image is not None
+    assert image.shape == (544, 1280, 3)
+
+
+def test_cli_save_images_path_handling(tmp_path: Path):
+    """Test `save-images` ability to handle UTF-8 paths."""
+    assert (
+        invoke_scenedetect(
+            "-i {{VIDEO}} -s {{STATS}} time {{TIME}} {{DETECTOR}} save-images -f {}".format(
+                "電腦檔案-$SCENE_NUMBER-$IMAGE_NUMBER"
+            ),
+            output_dir=tmp_path,
+        )
+        == 0
+    )
+    images = [image for image in tmp_path.glob("電腦檔案-*.jpg")]
+    # Should detect two scenes and generate 3 images per scene with above params.
+    assert len(images) == 6
+    # Check the created images can be read and have the correct size.
+    # We can't use `cv2.imread` here since it doesn't seem to work correctly with UTF-8 paths.
+    image = cv2.imdecode(np.fromfile(images[0], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    assert image is not None
+    assert image.shape == (544, 1280, 3)
+
+
+# TODO(https://scenedetect.com/issues/134): This works fine with OpenCV currently, but needs to be
+# supported for PyAV and MoviePy.
+def test_cli_save_images_rotation(rotated_video_file, tmp_path: Path):
+    """Test that `save-images` command rotates images correctly with the default backend."""
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} {DETECTOR} time {TIME} save-images",
+            VIDEO=rotated_video_file,
+            output_dir=tmp_path,
+        )
+        == 0
+    )
+    images = [image for image in tmp_path.glob("*.jpg")]
+    # Should detect two scenes and generate 3 images per scene with above params.
+    assert len(images) == 6
+    image = cv2.imread(str(images[0]))
+    assert image is not None
+    # Note same resolution as in test_cli_save_images but rotated 90 degrees.
+    assert image.shape == (1280, 544, 3)
+
+
+_TIME_AND_DETECTOR = ["time", *DEFAULT_TIME.split(), DEFAULT_DETECTOR]
+
+
+def _count_images_per_scene(path: Path) -> list[int]:
+    return [
+        len(list(path.glob(f"{DEFAULT_VIDEO_NAME}-Scene-{scene + 1:03d}-*.jpg")))
+        for scene in range(DEFAULT_NUM_SCENES)
+    ]
+
+
+def _invoke_save_images(
+    tmp_path: Path, args: list[str], config: str | None = None
+) -> tuple[int, str]:
+    """Run `save-images` with `args` in-process, using `config` as the [save-images] section of
+    the config file."""
+    config_path = tmp_path / "config.cfg"
+    config_path.write_text(f"[save-images]\n{config or ''}\n")
+    return invoke_cli(
+        [
+            "-c",
+            str(config_path),
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "-o",
+            str(tmp_path),
+            *_TIME_AND_DETECTOR,
+            "save-images",
+            *args,
+        ]
+    )
+
+
+@pytest.mark.parametrize(
+    "args,expected",
+    [
+        # The two scenes are 1.752s and 2.252s long: floor(length / 1s) + 1 images each.
+        (["-i", "1s"], [2, 3]),
+        (["-i", "1.5s"], [2, 2]),
+        (["--interval", "00:00:01.000"], [2, 3]),
+        # DURATION in frames (24 frames is about 1s here).
+        (["-i", "24"], [2, 3]),
+        # --min-images and --max-images limit the number of images per scene.
+        (["-i", "1s", "--min-images", "3"], [3, 3]),
+        (["-i", "0.5s", "--max-images", "4"], [4, 4]),
+        (["-i", "0.2s", "--min-images", "10", "--max-images", "11"], [10, 11]),
+        (["-i", "0.5s", "--max-images", "0"], [4, 5]),
+    ],
+)
+def test_cli_save_images_interval(tmp_path: Path, args: list[str], expected: list[int]):
+    """Test `save-images -i/--interval` with --min-images/--max-images."""
+    exit_code, _ = _invoke_save_images(tmp_path, args)
+    assert exit_code == 0
+    assert _count_images_per_scene(tmp_path) == expected
+
+
+@pytest.mark.parametrize(
+    "args,error",
+    [
+        (["-n", "3", "-i", "1s"], "Only one of -n/--num-images or -i/--interval can be set."),
+        (
+            ["--min-images", "2"],
+            "--min-images and --max-images can only be used with -i/--interval.",
+        ),
+        (
+            ["-n", "3", "--max-images", "2"],
+            "--min-images and --max-images can only be used with -i/--interval.",
+        ),
+        (
+            ["-i", "1s", "--min-images", "3", "--max-images", "2"],
+            "max-images must be 0 (no limit) or at least min-images.",
+        ),
+        (["-i", "1s", "--min-images", "0"], "0 is not in the range x>=1."),
+        (["-i", "1s", "--max-images", "-1"], "-1 is not in the range x>=0."),
+        (
+            ["-i", "abc"],
+            "Invalid value for -i/--interval: Interval must be in frames (24), seconds (1.5s), or HH:MM:SS.",
+        ),
+        (["-i", "0"], "Invalid value for -i/--interval: Interval must be greater than 0."),
+        (["-i", "0s"], "Invalid value for -i/--interval: Interval must be greater than 0."),
+    ],
+)
+def test_cli_save_images_interval_rejects_invalid_values(
+    tmp_path: Path, args: list[str], error: str
+):
+    exit_code, output = _invoke_save_images(tmp_path, args)
+    assert exit_code != 0
+    assert error in output
+    assert not list(tmp_path.glob("*.jpg"))
+
+
+@pytest.mark.parametrize(
+    "config,args,expected",
+    [
+        ("interval = 1s", [], [2, 3]),
+        ("interval = 1s\nmin-images = 3", [], [3, 3]),
+        ("interval = 0.5s\nmax-images = 4", [], [4, 4]),
+        # Options on the command line take precedence over the config file.
+        ("interval = 2s\nmax-images = 2", ["-i", "0.5s"], [2, 2]),
+        ("interval = 0.5s\nmax-images = 4", ["--max-images", "2"], [2, 2]),
+        ("interval = 0.5s\nmax-images = 4", ["--max-images", "0"], [4, 5]),
+        ("interval = 2s", ["--min-images", "3"], [3, 3]),
+        ("num-images = 5", ["-i", "1s"], [2, 3]),
+        # Without an interval in effect, min-images and max-images in the config file are ignored.
+        ("interval = 1s\nmin-images = 5\nmax-images = 5", ["-n", "2"], [2, 2]),
+        ("num-images = 2\nmin-images = 5", [], [2, 2]),
+    ],
+)
+def test_cli_save_images_interval_config_file(
+    tmp_path: Path, config: str, args: list[str], expected: list[int]
+):
+    """Test the `interval`, `min-images` and `max-images` options of `[save-images]`."""
+    exit_code, _ = _invoke_save_images(tmp_path, args, config=config)
+    assert exit_code == 0
+    assert _count_images_per_scene(tmp_path) == expected
+
+
+@pytest.mark.parametrize(
+    "config,args,error",
+    [
+        (
+            "num-images = 3\ninterval = 1s",
+            [],
+            "Only one of num-images or interval can be set in the config file.",
+        ),
+        (
+            "num-images = 3",
+            ["--max-images", "2"],
+            "--min-images and --max-images can only be used with -i/--interval.",
+        ),
+        (
+            "interval = 1s\nmin-images = 3\nmax-images = 2",
+            [],
+            "max-images must be 0 (no limit) or at least min-images.",
+        ),
+        ("interval = 0", [], "interval in the config file must be greater than 0."),
+        ("interval = 0s", [], "interval in the config file must be greater than 0."),
+    ],
+)
+def test_cli_save_images_interval_config_file_rejects_invalid_values(
+    tmp_path: Path, config: str, args: list[str], error: str
+):
+    exit_code, output = _invoke_save_images(tmp_path, args, config=config)
+    assert exit_code != 0
+    assert error in output
+    assert not list(tmp_path.glob("*.jpg"))
+
+
+@pytest.mark.parametrize(
+    "config,error",
+    [
+        ("interval = abc", "Timecodes must be in seconds (100.0), frames (100), or HH:MM:SS."),
+        ("min-images = 0", "Value must be an integer of at least 1."),
+        ("min-images = 1.5", "Value must be an integer of at least 1."),
+        ("min-images = x", "Value must be an integer of at least 1."),
+        ("max-images = -1", "Value must be an integer of at least 0."),
+    ],
+)
+def test_cli_save_images_interval_config_file_load_errors(tmp_path: Path, config: str, error: str):
+    config_path = tmp_path.joinpath("config.cfg")
+    config_path.write_text(f"[save-images]\n{config}\n")
+    with pytest.raises(ConfigLoadFailure) as ex:
+        ConfigRegistry(str(config_path))
+    assert any(error in message for _, message in ex.value.init_log)
+
+
+def test_cli_save_html(tmp_path: Path):
+    """Test `save-html` command."""
+    base_command = "-i {VIDEO} -s {STATS} time {TIME} {DETECTOR} {COMMAND}"
+    assert invoke_scenedetect(base_command, COMMAND="save-html", output_dir=tmp_path) == 0
+    # The global -o option should also apply when no images are saved.
+    assert (
+        invoke_scenedetect(
+            base_command,
+            COMMAND="save-html --no-images --filename no-images.html",
+            output_dir=tmp_path,
+        )
+        == 0
+    )
+    assert (tmp_path / "no-images.html").exists()
+    # Ensure we can still call the now deprecated export-html command.
+    assert invoke_scenedetect(base_command, COMMAND="export-html", output_dir=tmp_path) == 0
+    # TODO: Check for existence of HTML & image files.
+
+
+def test_cli_moviepy_accepts_frame_rate_override():
+    """The MoviePy backend supports the -f/--frame-rate override in v0.7. The CLI must run
+    end-to-end without raising NotImplementedError, and the override must be reflected in the
+    resulting frame rate."""
+    from fractions import Fraction
+
+    from scenedetect.backends.moviepy import VideoStreamMoviePy
+
+    # Direct backend invocation: confirm the frame_rate property reports the override.
+    vs = VideoStreamMoviePy("tests/resources/testvideo.mp4", frame_rate=15.0)
+    assert vs.frame_rate == Fraction(15, 1), (
+        f"MoviePy frame_rate override not honored: got {vs.frame_rate}"
+    )
+
+    # CLI invocation must run cleanly with `-b moviepy -f 30`.
+    exit_code, output = invoke_cli(
+        [
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "-b",
+            "moviepy",
+            "--frame-rate",
+            "30",
+            "time",
+            "--end",
+            "1s",
+            "detect-content",
+        ],
+    )
+    assert exit_code == 0, f"CLI failed:\n{output}"
+    assert "NotImplementedError" not in output, (
+        f"Backend NotImplementedError leaked to user output:\n{output}"
+    )
+
+
+def test_cli_legacy_v06_config_file(tmp_path: Path):
+    """A v0.6-era scenedetect.cfg using the deprecated `[export-html]` section must still load
+    in v0.7. The parser maps `[export-html]` -> `[save-html]` (via DEPRECATED_COMMANDS in
+    scenedetect/_cli/config.py) and emits a deprecation warning on load. This is the most
+    likely silent break for users upgrading config files; the option set under both sections
+    is identical."""
+    legacy_cfg = tmp_path / "scenedetect.cfg"
+    legacy_cfg.write_text(
+        # Mix of unchanged sections and the renamed `[export-html]` section.
+        "[global]\nmin-scene-len = 0.6s\n\n"
+        "[detect-content]\nthreshold = 27\n\n"
+        "[export-html]\nfilename = $VIDEO_NAME-Scenes.html\nno-images = yes\n"
+    )
+    exit_code, output = invoke_cli(
+        ["-c", str(legacy_cfg), "-i", DEFAULT_VIDEO_PATH, "time", "-s", "2s", "-d", "1s"],
+    )
+    assert exit_code == 0, f"v0.6-style config rejected:\n{output}"
+
+
+def test_cli_save_qp(tmp_path: Path):
+    """Test `save-qp` command with and without a custom filename format."""
+    EXPECTED_QP_CONTENTS = """
+0 I -1
+90 I -1
+"""
+    for filename in (None, "custom.txt"):
+        filename_format = f"--filename {filename}" if filename else ""
+        assert (
+            invoke_scenedetect(
+                f"-i {{VIDEO}} time -e 95 {{DETECTOR}} save-qp {filename_format}",
+                output_dir=tmp_path,
+            )
+            == 0
+        )
+        output_path = tmp_path.joinpath(filename if filename else f"{DEFAULT_VIDEO_NAME}.qp")
+        assert os.path.exists(output_path)
+        assert output_path.read_text() == EXPECTED_QP_CONTENTS[1:]
+
+
+def test_cli_save_qp_start_offset(tmp_path: Path):
+    """Test `save-qp` command but using a shifted start time."""
+    # The QP file should always start from frame 0, so we expect a similar result to the above, but
+    # with the frame numbers shifted by the start frame. Note that on the command-line, the first
+    # frame is frame 1, but the first frame in a QP file is indexed by 0.
+    #
+    # Since we are starting at frame 51, we must shift all cuts by 50 frames.
+    EXPECTED_QP_CONTENTS = """
+0 I -1
+40 I -1
+"""
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} time -s 51 -e 95 {DETECTOR} save-qp",
+            output_dir=tmp_path,
+        )
+        == 0
+    )
+    output_path = tmp_path.joinpath(f"{DEFAULT_VIDEO_NAME}.qp")
+    assert os.path.exists(output_path)
+    assert output_path.read_text() == EXPECTED_QP_CONTENTS[1:]
+
+
+def test_cli_save_qp_no_shift(tmp_path: Path):
+    """Test `save-qp` command with start time shifting disabled."""
+    EXPECTED_QP_CONTENTS = """
+50 I -1
+90 I -1
+"""
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} time -s 51 -e 95 {DETECTOR} save-qp --disable-shift",
+            output_dir=tmp_path,
+        )
+        == 0
+    )
+    output_path = tmp_path.joinpath(f"{DEFAULT_VIDEO_NAME}.qp")
+    assert os.path.exists(output_path)
+    assert output_path.read_text() == EXPECTED_QP_CONTENTS[1:]
+
+
+def test_cli_save_keyframes(tmp_path: Path):
+    """Test `save-keyframes` command."""
+    EXPECTED_KEYFRAMES_CONTENTS = """# keyframe format v1
+fps 0
+0
+90
+"""
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} time -e 95 {DETECTOR} save-keyframes",
+            output_dir=tmp_path,
+        )
+        == 0
+    )
+    output_path = tmp_path / f"{DEFAULT_VIDEO_NAME}-keyframes.txt"
+    assert output_path.exists()
+    assert output_path.read_text() == EXPECTED_KEYFRAMES_CONTENTS
+
+
+def test_cli_save_keyframes_start_offset(tmp_path: Path):
+    """Test `save-keyframes` command"""
+    EXPECTED_KEYFRAMES_CONTENTS = """# keyframe format v1
+fps 0
+0
+90
+"""
+    assert (
+        invoke_scenedetect(
+            "-i {VIDEO} time -s 51 -e 95 {DETECTOR} save-keyframes",
+            output_dir=tmp_path,
+        )
+        == 0
+    )
+    output_path = tmp_path.joinpath(f"{DEFAULT_VIDEO_NAME}-keyframes.txt")
+    assert os.path.exists(output_path)
+    assert output_path.read_text() == EXPECTED_KEYFRAMES_CONTENTS
+
+
+def test_cli_save_keyframes_custom_filename(tmp_path: Path):
+    """Test `save-keyframes` with a custom filename."""
+    custom_filename = "custom-keyframes.txt"
+    assert (
+        invoke_scenedetect(
+            f"-i {{VIDEO}} time -s 51 -e 95 {{DETECTOR}} "
+            f"save-keyframes --filename {custom_filename}",
+            output_dir=tmp_path,
+        )
+        == 0
+    )
+    output_path = tmp_path / custom_filename
+    assert output_path.exists()
+
+
+@pytest.mark.parametrize("backend_type", ALL_BACKENDS)
+def test_cli_backend(backend_type: str):
+    """Test setting the `-b`/`--backend` argument."""
+    assert (
+        invoke_scenedetect("-i {VIDEO} -b {BACKEND} time {TIME} {DETECTOR}", BACKEND=backend_type)
+        == 0
+    )
+
+
+def test_cli_image_sequence_uses_default_backend(test_image_sequence: str):
+    """An image sequence works without -b/--backend, since opencv is the default backend."""
+    exit_code, output = invoke_cli(["-i", test_image_sequence, "-f", "30", "detect-content"])
+    assert exit_code == 0, output
+
+
+def test_cli_image_sequence_uses_config_backend(tmp_path: Path, test_image_sequence: str):
+    """`backend = opencv` in a config file is honored by the image sequence check."""
+    config_path = tmp_path.joinpath("config.cfg")
+    config_path.write_text("[global]\nbackend = opencv\n")
+    exit_code, output = invoke_cli(
+        ["-c", str(config_path), "-i", test_image_sequence, "-f", "30", "detect-content"]
+    )
+    assert exit_code == 0, output
+
+
+def test_cli_image_sequence_rejects_other_backend(tmp_path: Path, test_image_sequence: str):
+    """Other backends still can't open image sequences and give a usage error."""
+    config_path = tmp_path.joinpath("config.cfg")
+    config_path.write_text("[global]\nbackend = moviepy\n")
+    exit_code, output = invoke_cli(["-c", str(config_path), "-i", test_image_sequence])
+    assert exit_code != 0
+    assert "must be used to process image sequences" in output
+
+
+def test_cli_backend_unsupported():
+    """Ensure setting an invalid backend returns an error."""
+    assert (
+        invoke_scenedetect("-i {VIDEO} -b {BACKEND} {DETECTOR}", BACKEND="unknown_backend_type")
+        != 0
+    )
+
+
+def test_cli_load_scenes_options():
+    """Ensure we can load scenes both with and without the cut row."""
+    assert invoke_scenedetect("-i {VIDEO} time {TIME} {DETECTOR} list-scenes") == 0
+    assert invoke_scenedetect("-i {VIDEO} time {TIME} load-scenes -i {VIDEO_NAME}-Scenes.csv") == 0
+    # Specifying a detector with load-scenes should be disallowed.
+    assert invoke_scenedetect(
+        "-i {VIDEO} time {TIME} {DETECTOR} load-scenes -i {VIDEO_NAME}-Scenes.csv"
+    )
+    # Specifying load-scenes several times should be disallowed.
+    assert invoke_scenedetect(
+        "-i {VIDEO} time {TIME} load-scenes -i {VIDEO_NAME}-Scenes.csv load-scenes -i {VIDEO_NAME}-Scenes.csv"
+    )
+    # If `-s`/`--skip-cuts` is specified, the resulting scene list should still be compatible with
+    # the `load-scenes` command.
+    assert invoke_scenedetect("-i {VIDEO} time {TIME} {DETECTOR} list-scenes -s") == 0
+    assert invoke_scenedetect("-i {VIDEO} time {TIME} load-scenes -i {VIDEO_NAME}-Scenes.csv") == 0
+
+
+def test_cli_load_scenes_output():
+    """Verify we can use `load-scenes` with the `time` command and get the desired output."""
+    scenes_csv = """
+Scene Number,Start Frame
+1,49
+2,91
+3,211
+"""
+    with open("test_scene_list.csv", "w") as f:
+        f.write(scenes_csv)
+    output = subprocess.check_output(
+        [
+            *SCENEDETECT_CMD.split(" "),
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "load-scenes",
+            "-i",
+            "test_scene_list.csv",
+            "time",
+            "-s",
+            "2s",
+            "-e",
+            "10s",
+            "list-scenes",
+        ],
+        text=True,
+    )
+    assert (
+        """
+-----------------------------------------------------------------------
+ | Scene # | Start Frame |  Start Time  |  End Frame  |   End Time   |
+-----------------------------------------------------------------------
+ |      1  |          49 | 00:00:02.002 |          90 | 00:00:03.754 |
+ |      2  |          91 | 00:00:03.754 |         210 | 00:00:08.759 |
+ |      3  |         211 | 00:00:08.759 |         240 | 00:00:10.010 |
+-----------------------------------------------------------------------
+"""
+        in output
+    )
+    assert "00:00:03.754,00:00:08.759" in output
+
+
+def test_cli_load_scenes_round_trip():
+    """Verify we can use `load-scenes` and get the same scenes as output with `list-scenes`."""
+    scenes_csv = """
+Scene Number,Start Frame
+1,49
+2,91
+3,211
+"""
+    with open("test_scene_list.csv", "w") as f:
+        f.write(scenes_csv)
+    ground_truth = subprocess.check_output(
+        [
+            *SCENEDETECT_CMD.split(" "),
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "detect-content",
+            "list-scenes",
+            "-f",
+            "testout.csv",
+            "time",
+            "-s",
+            "200",
+            "-e",
+            "400",
+        ],
+        text=True,
+    )
+    loaded_first_pass = subprocess.check_output(
+        [
+            *SCENEDETECT_CMD.split(" "),
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "load-scenes",
+            "-i",
+            "testout.csv",
+            "time",
+            "-s",
+            "200",
+            "-e",
+            "400",
+            "list-scenes",
+            "-f",
+            "testout2.csv",
+        ],
+        text=True,
+    )
+    SPLIT_POINT = " | Scene # | Start Frame |  Start Time  |  End Frame  |   End Time   |"
+    assert ground_truth.split(SPLIT_POINT)[1] == loaded_first_pass.split(SPLIT_POINT)[1]
+    with open("testout.csv") as first, open("testout2.csv") as second:
+        assert first.readlines() == second.readlines()
+
+
+def test_cli_save_chapters(tmp_path: Path):
+    """Test `save-chapters` command."""
+    exit_code, _ = invoke_cli(
+        [
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "-o",
+            str(tmp_path),
+            "time",
+            "-s",
+            "2s",
+            "-d",
+            "4s",
+            "detect-content",
+            "save-chapters",
+        ]
+    )
+    assert exit_code == 0
+    output_path = tmp_path.joinpath(f"{DEFAULT_VIDEO_NAME}-Chapters.txt")
+    assert os.path.exists(output_path)
+    EXPECTED_CHAPTERS_OUTPUT = """;FFMETADATA1
+[CHAPTER]
+TIMEBASE=1/1000
+START=2002
+END=3754
+title=Scene 1
+[CHAPTER]
+TIMEBASE=1/1000
+START=3754
+END=6006
+title=Scene 2
+"""
+    assert output_path.read_text() == EXPECTED_CHAPTERS_OUTPUT
+
+
+def test_cli_save_chapters_with_params(tmp_path: Path):
+    """Test `save-chapters` command with the filename, title, and output options overridden."""
+    output_dir = tmp_path / "chapters"
+    exit_code, _ = invoke_cli(
+        [
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "time",
+            "-s",
+            "2s",
+            "-d",
+            "4s",
+            "detect-content",
+            "save-chapters",
+            "-f",
+            "my_chapters.txt",
+            "-t",
+            "$VIDEO_NAME - Shot $SCENE_NUMBER",
+            "-o",
+            str(output_dir),
+        ]
+    )
+    assert exit_code == 0
+    output_path = output_dir.joinpath("my_chapters.txt")
+    assert os.path.exists(output_path)
+    content = output_path.read_text()
+    assert content.startswith(";FFMETADATA1\n")
+    assert f"title={DEFAULT_VIDEO_NAME} - Shot 1\n" in content
+    assert f"title={DEFAULT_VIDEO_NAME} - Shot 2\n" in content
+
+
+def test_cli_save_edl(tmp_path: Path):
+    """Test `save-edl` command."""
+    exit_code, _ = invoke_cli(
+        [
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "-o",
+            str(tmp_path),
+            "time",
+            "-s",
+            "2s",
+            "-d",
+            "4s",
+            "detect-content",
+            "save-edl",
+        ]
+    )
+    assert exit_code == 0
+    output_path = tmp_path.joinpath(f"{DEFAULT_VIDEO_NAME}.edl")
+    assert os.path.exists(output_path)
+    EXPECTED_EDL_OUTPUT = f"""* CREATED WITH PYSCENEDETECT {scenedetect.__version__}
+TITLE: {DEFAULT_VIDEO_NAME}
+FCM: NON-DROP FRAME
+
+001  AX V     C        00:00:02:00 00:00:03:18 00:00:02:00 00:00:03:18
+002  AX V     C        00:00:03:18 00:00:06:00 00:00:03:18 00:00:06:00
+"""
+    assert output_path.read_text() == EXPECTED_EDL_OUTPUT
+
+
+def test_cli_save_edl_with_params(tmp_path: Path):
+    """Test `save-edl` command but override the other options."""
+    exit_code, _ = invoke_cli(
+        [
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "-o",
+            str(tmp_path),
+            "time",
+            "-s",
+            "2s",
+            "-d",
+            "4s",
+            "detect-content",
+            "save-edl",
+            "-t",
+            "title",
+            "-r",
+            "BX",
+            "-f",
+            "file_no_ext",
+        ]
+    )
+    assert exit_code == 0
+    output_path = tmp_path.joinpath("file_no_ext")
+    assert os.path.exists(output_path)
+    EXPECTED_EDL_OUTPUT = f"""* CREATED WITH PYSCENEDETECT {scenedetect.__version__}
+TITLE: title
+FCM: NON-DROP FRAME
+
+001  BX V     C        00:00:02:00 00:00:03:18 00:00:02:00 00:00:03:18
+002  BX V     C        00:00:03:18 00:00:06:00 00:00:03:18 00:00:06:00
+"""
+    assert output_path.read_text() == EXPECTED_EDL_OUTPUT
+
+
+def test_cli_save_edl_start_timecode_ntsc(tmp_path: Path):
+    """`save-edl -s 01:00:00:00` on a 29.97 fps video starts the first event at exactly
+    `01:00:00:00` rather than `00:59:59:29`, since EDL timecodes are non-drop-frame (#593)."""
+    exit_code, _ = invoke_cli(
+        [
+            "-i",
+            "tests/resources/testvideo.mp4",
+            "-o",
+            str(tmp_path),
+            "detect-content",
+            "save-edl",
+            "-s",
+            "01:00:00:00",
+        ]
+    )
+    assert exit_code == 0
+    content = tmp_path.joinpath("testvideo.edl").read_text()
+    assert "001  AX V     C        01:00:00:00 " in content
+
+
+def test_cli_save_otio(tmp_path: Path):
+    """Test `save-otio` command."""
+    exit_code, _ = invoke_cli(
+        [
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "-o",
+            str(tmp_path),
+            "time",
+            "-s",
+            "2s",
+            "-d",
+            "4s",
+            "detect-content",
+            "save-otio",
+        ]
+    )
+    assert exit_code == 0
+    output_path = tmp_path.joinpath(f"{DEFAULT_VIDEO_NAME}.otio")
+    assert os.path.exists(output_path)
+    EXPECTED_OTIO_OUTPUT = """{
+    "OTIO_SCHEMA": "Timeline.1",
+    "name": "goldeneye (PySceneDetect)",
+    "global_start_time": {
+        "OTIO_SCHEMA": "RationalTime.1",
+        "rate": 23.976023976023978,
+        "value": 0.0
+    },
+    "tracks": {
+        "OTIO_SCHEMA": "Stack.1",
+        "enabled": true,
+        "children": [
+            {
+                "OTIO_SCHEMA": "Track.1",
+                "name": "Video 1",
+                "enabled": true,
+                "children": [
+                    {
+                        "OTIO_SCHEMA": "Clip.2",
+                        "name": "goldeneye.mp4",
+                        "source_range": {
+                            "OTIO_SCHEMA": "TimeRange.1",
+                            "duration": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 23.976023976023978,
+                                "value": 42.0
+                            },
+                            "start_time": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 23.976023976023978,
+                                "value": 48.0
+                            }
+                        },
+                        "enabled": true,
+                        "media_references": {
+                            "DEFAULT_MEDIA": {
+                                "OTIO_SCHEMA": "ExternalReference.1",
+                                "name": "goldeneye.mp4",
+                                "available_range": {
+                                    "OTIO_SCHEMA": "TimeRange.1",
+                                    "duration": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 23.976023976023978,
+                                        "value": 1980.0
+                                    },
+                                    "start_time": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 23.976023976023978,
+                                        "value": 0.0
+                                    }
+                                },
+                                "available_image_bounds": null,
+                                "target_url": "{ABSOLUTE_PATH}"
+                            }
+                        },
+                        "active_media_reference_key": "DEFAULT_MEDIA"
+                    },
+                    {
+                        "OTIO_SCHEMA": "Clip.2",
+                        "name": "goldeneye.mp4",
+                        "source_range": {
+                            "OTIO_SCHEMA": "TimeRange.1",
+                            "duration": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 23.976023976023978,
+                                "value": 54.0
+                            },
+                            "start_time": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 23.976023976023978,
+                                "value": 90.0
+                            }
+                        },
+                        "enabled": true,
+                        "media_references": {
+                            "DEFAULT_MEDIA": {
+                                "OTIO_SCHEMA": "ExternalReference.1",
+                                "name": "goldeneye.mp4",
+                                "available_range": {
+                                    "OTIO_SCHEMA": "TimeRange.1",
+                                    "duration": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 23.976023976023978,
+                                        "value": 1980.0
+                                    },
+                                    "start_time": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 23.976023976023978,
+                                        "value": 0.0
+                                    }
+                                },
+                                "available_image_bounds": null,
+                                "target_url": "{ABSOLUTE_PATH}"
+                            }
+                        },
+                        "active_media_reference_key": "DEFAULT_MEDIA"
+                    }
+                ],
+                "kind": "Video"
+            },
+            {
+                "OTIO_SCHEMA": "Track.1",
+                "name": "Audio 1",
+                "enabled": true,
+                "children": [
+                    {
+                        "OTIO_SCHEMA": "Clip.2",
+                        "name": "goldeneye.mp4",
+                        "source_range": {
+                            "OTIO_SCHEMA": "TimeRange.1",
+                            "duration": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 23.976023976023978,
+                                "value": 42.0
+                            },
+                            "start_time": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 23.976023976023978,
+                                "value": 48.0
+                            }
+                        },
+                        "enabled": true,
+                        "media_references": {
+                            "DEFAULT_MEDIA": {
+                                "OTIO_SCHEMA": "ExternalReference.1",
+                                "name": "goldeneye.mp4",
+                                "available_range": {
+                                    "OTIO_SCHEMA": "TimeRange.1",
+                                    "duration": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 23.976023976023978,
+                                        "value": 1980.0
+                                    },
+                                    "start_time": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 23.976023976023978,
+                                        "value": 0.0
+                                    }
+                                },
+                                "available_image_bounds": null,
+                                "target_url": "{ABSOLUTE_PATH}"
+                            }
+                        },
+                        "active_media_reference_key": "DEFAULT_MEDIA"
+                    },
+                    {
+                        "OTIO_SCHEMA": "Clip.2",
+                        "name": "goldeneye.mp4",
+                        "source_range": {
+                            "OTIO_SCHEMA": "TimeRange.1",
+                            "duration": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 23.976023976023978,
+                                "value": 54.0
+                            },
+                            "start_time": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 23.976023976023978,
+                                "value": 90.0
+                            }
+                        },
+                        "enabled": true,
+                        "media_references": {
+                            "DEFAULT_MEDIA": {
+                                "OTIO_SCHEMA": "ExternalReference.1",
+                                "name": "goldeneye.mp4",
+                                "available_range": {
+                                    "OTIO_SCHEMA": "TimeRange.1",
+                                    "duration": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 23.976023976023978,
+                                        "value": 1980.0
+                                    },
+                                    "start_time": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 23.976023976023978,
+                                        "value": 0.0
+                                    }
+                                },
+                                "available_image_bounds": null,
+                                "target_url": "{ABSOLUTE_PATH}"
+                            }
+                        },
+                        "active_media_reference_key": "DEFAULT_MEDIA"
+                    }
+                ],
+                "kind": "Audio"
+            }
+        ]
+    }
+}
+"""
+    assert output_path.read_text() == EXPECTED_OTIO_OUTPUT.replace(
+        "{ABSOLUTE_PATH}", os.path.abspath(DEFAULT_VIDEO_PATH).replace("\\", "\\\\")
+    )
+
+
+def test_cli_save_otio_no_audio(tmp_path: Path):
+    """Test `save-otio` command without audio."""
+    exit_code, _ = invoke_cli(
+        [
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "-o",
+            str(tmp_path),
+            "time",
+            "-s",
+            "2s",
+            "-d",
+            "4s",
+            "detect-content",
+            "save-otio",
+            "--no-audio",
+        ]
+    )
+    assert exit_code == 0
+    output_path = tmp_path.joinpath(f"{DEFAULT_VIDEO_NAME}.otio")
+    assert os.path.exists(output_path)
+    EXPECTED_OTIO_OUTPUT = """{
+    "OTIO_SCHEMA": "Timeline.1",
+    "name": "goldeneye (PySceneDetect)",
+    "global_start_time": {
+        "OTIO_SCHEMA": "RationalTime.1",
+        "rate": 23.976023976023978,
+        "value": 0.0
+    },
+    "tracks": {
+        "OTIO_SCHEMA": "Stack.1",
+        "enabled": true,
+        "children": [
+            {
+                "OTIO_SCHEMA": "Track.1",
+                "name": "Video 1",
+                "enabled": true,
+                "children": [
+                    {
+                        "OTIO_SCHEMA": "Clip.2",
+                        "name": "goldeneye.mp4",
+                        "source_range": {
+                            "OTIO_SCHEMA": "TimeRange.1",
+                            "duration": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 23.976023976023978,
+                                "value": 42.0
+                            },
+                            "start_time": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 23.976023976023978,
+                                "value": 48.0
+                            }
+                        },
+                        "enabled": true,
+                        "media_references": {
+                            "DEFAULT_MEDIA": {
+                                "OTIO_SCHEMA": "ExternalReference.1",
+                                "name": "goldeneye.mp4",
+                                "available_range": {
+                                    "OTIO_SCHEMA": "TimeRange.1",
+                                    "duration": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 23.976023976023978,
+                                        "value": 1980.0
+                                    },
+                                    "start_time": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 23.976023976023978,
+                                        "value": 0.0
+                                    }
+                                },
+                                "available_image_bounds": null,
+                                "target_url": "{ABSOLUTE_PATH}"
+                            }
+                        },
+                        "active_media_reference_key": "DEFAULT_MEDIA"
+                    },
+                    {
+                        "OTIO_SCHEMA": "Clip.2",
+                        "name": "goldeneye.mp4",
+                        "source_range": {
+                            "OTIO_SCHEMA": "TimeRange.1",
+                            "duration": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 23.976023976023978,
+                                "value": 54.0
+                            },
+                            "start_time": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 23.976023976023978,
+                                "value": 90.0
+                            }
+                        },
+                        "enabled": true,
+                        "media_references": {
+                            "DEFAULT_MEDIA": {
+                                "OTIO_SCHEMA": "ExternalReference.1",
+                                "name": "goldeneye.mp4",
+                                "available_range": {
+                                    "OTIO_SCHEMA": "TimeRange.1",
+                                    "duration": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 23.976023976023978,
+                                        "value": 1980.0
+                                    },
+                                    "start_time": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 23.976023976023978,
+                                        "value": 0.0
+                                    }
+                                },
+                                "available_image_bounds": null,
+                                "target_url": "{ABSOLUTE_PATH}"
+                            }
+                        },
+                        "active_media_reference_key": "DEFAULT_MEDIA"
+                    }
+                ],
+                "kind": "Video"
+            }
+        ]
+    }
+}
+"""
+    assert output_path.read_text() == EXPECTED_OTIO_OUTPUT.replace(
+        "{ABSOLUTE_PATH}", os.path.abspath(DEFAULT_VIDEO_PATH).replace("\\", "\\\\")
+    )
+
+
+def test_cli_save_fcp_fcpx(tmp_path: Path):
+    """Test `save-fcp --format fcpx` produces a valid FCPXML 1.9 file."""
+    from xml.etree import ElementTree
+
+    exit_code, _ = invoke_cli(
+        [
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "-o",
+            str(tmp_path),
+            "time",
+            "-s",
+            "2s",
+            "-d",
+            "4s",
+            "detect-content",
+            "save-fcp",
+        ]
+    )
+    assert exit_code == 0
+    output_path = tmp_path.joinpath(f"{DEFAULT_VIDEO_NAME}.xml")
+    assert os.path.exists(output_path)
+
+    root = ElementTree.parse(output_path).getroot()
+    assert root.tag == "fcpxml"
+    assert root.attrib["version"] == "1.9"
+
+    # Format carries the rational frameDuration derived from the video's 24000/1001 fps.
+    fmt = root.find("resources/format")
+    assert fmt is not None
+    assert fmt.attrib["frameDuration"] == "1001/24000s"
+    assert fmt.attrib["width"] == "1280"
+    assert fmt.attrib["height"] == "544"
+
+    # Asset references the source video via a file:// URI.
+    media_rep = root.find("resources/asset/media-rep")
+    assert media_rep is not None
+    assert media_rep.attrib["src"].startswith("file://")
+    assert media_rep.attrib["src"].endswith("goldeneye.mp4")
+
+    # Spine contains one `<asset-clip>` per scene (not wrapped in `<clip>`).
+    asset_clips = root.findall("library/event/project/sequence/spine/asset-clip")
+    assert len(asset_clips) == 2
+    # All clip time attributes are rational strings ending in "s".
+    for clip in asset_clips:
+        for attr in ("offset", "start", "duration"):
+            assert clip.attrib[attr].endswith("s")
+
+
+def test_cli_save_fcp_fcp7(tmp_path: Path):
+    """Test `save-fcp --format fcp7` produces a valid FCP7 xmeml file."""
+    from xml.etree import ElementTree
+
+    exit_code, _ = invoke_cli(
+        [
+            "-i",
+            DEFAULT_VIDEO_PATH,
+            "-o",
+            str(tmp_path),
+            "time",
+            "-s",
+            "2s",
+            "-d",
+            "4s",
+            "detect-content",
+            "save-fcp",
+            "--format",
+            "fcp7",
+        ]
+    )
+    assert exit_code == 0
+    output_path = tmp_path.joinpath(f"{DEFAULT_VIDEO_NAME}.xml")
+    assert os.path.exists(output_path)
+
+    root = ElementTree.parse(output_path).getroot()
+    assert root.tag == "xmeml"
+    assert root.attrib["version"] == "5"
+
+    # NTSC flag is True for the 23.976 test video.
+    ntsc = root.find("project/sequence/rate/ntsc")
+    assert ntsc is not None and ntsc.text == "True"
+
+    # samplecharacteristics carry width/height so Premiere/DaVinci can ingest.
+    width = root.find("project/sequence/media/video/format/samplecharacteristics/width")
+    height = root.find("project/sequence/media/video/format/samplecharacteristics/height")
+    assert width is not None and width.text == "1280"
+    assert height is not None and height.text == "544"
+
+    # Two clipitems produced; first carries the full <file> block, rest reference it by id.
+    clipitems = root.findall("project/sequence/media/video/track/clipitem")
+    assert len(clipitems) == 2
+
+    first_file = clipitems[0].find("file")
+    assert first_file is not None
+    assert first_file.attrib["id"] == "file1"
+    pathurl = first_file.find("pathurl")
+    assert pathurl is not None and pathurl.text is not None
+    assert pathurl.text.startswith("file://")
+    assert pathurl.text.endswith("goldeneye.mp4")
+    # Source duration is required for NLEs to seek into the media.
+    assert first_file.find("duration") is not None
+
+    # Subsequent clipitems reference the same file id without redeclaring.
+    second_file = clipitems[1].find("file")
+    assert second_file is not None
+    assert second_file.attrib["id"] == "file1"
+    assert second_file.find("pathurl") is None
+
+
+# Matroska can be demuxed from a pipe, unlike an MP4 with its index at the end of the file.
+STDIN_VIDEO_PATH = "tests/resources/issue-236-split-copy.mkv"
+
+
+def run_stdin(*args: str, video: str | None = STDIN_VIDEO_PATH) -> subprocess.CompletedProcess:
+    """Runs the CLI with `video` written to stdin through a real pipe."""
+    return subprocess.run(
+        [*SCENEDETECT_CMD.split(" "), *args],
+        input=Path(video).read_bytes() if video else b"",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+
+
+def test_cli_stdin_matches_file_input():
+    """Scenes detected from stdin should match those from the same video opened by path."""
+    command = ["detect-content", "list-scenes", "-n"]
+    piped = run_stdin("--stdin", *command)
+    assert piped.returncode == 0, piped.stdout.decode(errors="replace")
+    from_file = subprocess.run(
+        [*SCENEDETECT_CMD.split(" "), "-i", STDIN_VIDEO_PATH, "-b", "pyav", *command],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert from_file.returncode == 0
+
+    def scene_rows(output: bytes) -> list[str]:
+        return [line for line in output.decode().splitlines() if line.strip().startswith("|")]
+
+    assert scene_rows(piped.stdout)
+    assert scene_rows(piped.stdout) == scene_rows(from_file.stdout)
+
+
+def test_cli_stdin_output_filename(tmp_path: Path):
+    """$VIDEO_NAME should have a usable value since there is no input path."""
+    result = run_stdin("--stdin", "-o", str(tmp_path), "detect-content", "list-scenes")
+    assert result.returncode == 0, result.stdout.decode(errors="replace")
+    assert (tmp_path / "stdin-Scenes.csv").exists()
+
+
+def test_cli_stdin_save_html_without_images(tmp_path: Path):
+    """save-html needs to seek for images, so they should be left out when reading from stdin."""
+    result = run_stdin("--stdin", "-o", str(tmp_path), "detect-content", "save-html")
+    assert result.returncode == 0, result.stdout.decode(errors="replace")
+    assert b"save-html will not include images" in result.stdout
+    assert (tmp_path / "stdin-Scenes.html").exists()
+    assert not list(tmp_path.glob("*.jpg"))
+
+
+def test_cli_stdin_with_input():
+    """--stdin and -i/--input should be mutually exclusive."""
+    result = run_stdin("--stdin", "-i", DEFAULT_VIDEO_PATH, "detect-content")
+    assert result.returncode != 0
+    assert b"cannot be used with --stdin" in result.stdout
+
+
+def test_cli_stdin_with_other_backend():
+    """--stdin is only implemented by the PyAV backend."""
+    result = run_stdin("--stdin", "-b", "opencv", "detect-content")
+    assert result.returncode != 0
+    assert b"requires the pyav backend" in result.stdout
+
+
+@pytest.mark.parametrize(
+    "stdin",
+    [
+        SimpleNamespace(isatty=lambda: True),
+        None,  # No console, e.g. under pythonw.exe on Windows.
+    ],
+)
+def test_cli_stdin_terminal(monkeypatch: pytest.MonkeyPatch, stdin: SimpleNamespace | None):
+    """Reading from a terminal would block forever, so it should be rejected."""
+    monkeypatch.setattr("sys.stdin", stdin)
+    with pytest.raises(click.BadParameter, match="requires a video to be piped"):
+        CliContext()._open_stdin_stream(frame_rate=None, backend=None)
+
+
+def test_cli_stdin_stats_file(tmp_path: Path):
+    """A stats file should be written for each frame read from stdin."""
+    result = run_stdin("--stdin", "-o", str(tmp_path), "-s", "stats.csv", "detect-content")
+    assert result.returncode == 0, result.stdout.decode(errors="replace")
+    assert len((tmp_path / "stats.csv").read_text().splitlines()) > 1
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "split-video",
+        "save-images",
+        "save-fcp",
+        "save-otio",
+        # The option requires a path that exists, but it's rejected before the file is parsed.
+        f"load-scenes -i {DEFAULT_CONFIG_FILE}",
+        "time -s 1s",
+    ],
+)
+def test_cli_stdin_incompatible_commands(command: str):
+    """Commands that need to seek or refer to a source file should fail before processing."""
+    result = run_stdin("--stdin", *command.split(" "))
+    assert result.returncode != 0
+    output = result.stdout.decode(errors="replace")
+    assert "incompatible with --stdin" in output
+    assert "Processed" not in output
+
+
+def test_cli_stdin_unreadable_container():
+    """An MP4 with its index at the end decodes no frames from a pipe, which shouldn't be silent."""
+    # This relies on testvideo.mp4 having its moov atom at the end of the file.
+    result = run_stdin("--stdin", "detect-content", video="tests/resources/testvideo.mp4")
+    assert result.returncode != 0
+    assert b"Failed to read any frames from stdin" in result.stdout
+
+
+def test_cli_stdin_no_data(monkeypatch: pytest.MonkeyPatch):
+    """An empty pipe should be reported as a failure to open the input."""
+    # Errors opening the input are only reported as usage errors outside of debug mode.
+    monkeypatch.setenv("SCENEDETECT_DEBUG", "")
+    result = run_stdin("--stdin", "detect-content", video=None)
+    assert result.returncode != 0
+    assert b"Invalid value for --stdin: Failed to open input video" in result.stdout

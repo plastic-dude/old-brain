@@ -1,14 +1,13 @@
 # Tool map: show bible area to tool
 
-| Bible area | Tool | Status | What we take |
+| Bible area | Our module | Vendored | Status |
 |---|---|---|---|
-| 2. Body | vendor/animated-drawings | vendored | Drawing to mask to skeleton to ARAP deformation; BVH motion retargeting; transparent export |
-| 4. Camera motion | vendor/depthflow | vendored | Ray-marched 2.5D parallax from image plus depth; seamless loops; no watermark |
-| 1. Faces (mouths) | vendor/rhubarb | vendored (no third-party lib/) | Voice to 6-9 mouth shapes; phonetic mode works on gibberish |
-| 1. Faces (expressions) | TBD | scouting | LivePortrait is human-only; we likely build parametric dot-eye faces ourselves |
-| 3. Environments | TBD | scouting | Depth estimation, layer separation, inpainting |
-| 5. Angles | TBD | scouting | |
-| 6. Story | ours | not started | Formula from bible section 6; no repo writes hits |
-| 7. Controversy | ours | not started | QA checklist from bible section 7 |
-| Assembly | TBD | scouting | Remotion, MoviePy or ffmpeg graph |
-| Audio | TBD | scouting | Pitch presets, crowd layering, -14 LUFS |
+| 1. Faces | oldbrain/face.py, lipsync.py | rhubarb | working: 9 presets; lip-sync mapping written, needs the rhubarb binary |
+| 2. Body | oldbrain/cutout.py, outline.py | animated-drawings, rembg | working: cutout + outline + validator; rigging next |
+| 3. Environments | oldbrain/plate.py | lama, depth-anything-v2 | working: clean plates; depth layers next |
+| 4. Camera motion | oldbrain/camera.py | depthflow | working: 5 moves + parallax + shadows |
+| 5. Angles | camera framing presets (next) | pyscenedetect | rival cut-rhythm analysis next |
+| 6. Story | ours | moneyprinterturbo (flow reference) | formula in the bible; no repo writes hits |
+| 7. Controversy | QA checklist (next) | none | rules in the bible |
+| Assembly | oldbrain/assemble.py | moviepy | working: MP4, whip, handprint portal, captions |
+| Audio | oldbrain/voice.py | pedalboard, ffmpeg-normalize | written: presets, crowd, master; needs her takes |

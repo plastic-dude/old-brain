@@ -1,0 +1,8 @@
+[
+  "tests/test_cutout.py::test_eye_kept_wall_loop_open",
+  "tests/test_cutout.py::test_outline_validator",
+  "tests/test_face.py::test_head_found_and_every_preset_paints",
+  "tests/test_spec.py::test_contrast_matches_locked_spec",
+  "tests/test_spec.py::test_every_archetype_has_voice_and_unique_head",
+  "tests/test_spec.py::test_outline_floor_scales"
+]

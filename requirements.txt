@@ -1,0 +1,11 @@
+numpy>=2
+scipy>=1.13
+pillow>=10
+pyyaml>=6
+moviepy>=2.1
+pedalboard>=0.9
+ffmpeg-normalize>=1.40
+pytest
+# optional, heavier:
+# rembg[cpu]  (use isnet-general-use, NOT the default bria model)
+# torch + vendor/depth-anything-v2 (Small only), vendor/lama (big-lama) for hero shots

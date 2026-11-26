@@ -1,0 +1,13 @@
+# Machine-readable mirror of spec/archetype-spec-v1.md. Code reads THIS file.
+version: 1
+frame: {width: 1080, height: 1920, fps: 30}
+body: "#4F140C"
+outline: {color: "#EDE6D8", min_px_at_1080: 6}
+backgrounds: {wall: "#C8BBA8", dusk: "#41454F"}
+archetypes:
+  prophet:  {tunic: "#C38427", head: flame_tuft, face: wide_grin,    pose: arms_raised,   voice: {semitones: -2.5, pace: slow,  character: booming}}
+  panicker: {tunic: "#516276", head: wild_spikes, face: huge_open,   pose: hands_cheeks,  voice: {semitones: 2.5,  pace: fast,  character: breathless}}
+  seller:   {tunic: "#747745", head: topknot_bun, face: side_smirk,  pose: offer_product, voice: {semitones: 1.5,  pace: fast,  character: nasal}}
+  owner:    {tunic: "#9C5C9A", head: flat_top,    face: brows_down,  pose: hands_hips,    voice: {semitones: -1.5, pace: clipped, character: loud}}
+  denier:   {tunic: "#715E51", head: bald,        face: half_lid,    pose: arms_crossed,  voice: {semitones: -0.7, pace: slow,  character: monotone}}
+# denier is -0.7 st (not 0) so it never collides with the narrator's natural voice (critique fix).

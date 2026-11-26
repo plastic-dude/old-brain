@@ -1,0 +1,86 @@
+name: Check Documentation
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  pull_request:
+    paths:
+      - docs/**
+      - scenedetect/**
+      - scenedetect.cfg
+      - website/**
+      - pyproject.toml
+      - .github/workflows/check-docs.yml
+  push:
+    paths:
+      - docs/**
+      - scenedetect/**
+      - scenedetect.cfg
+      - website/**
+      - pyproject.toml
+      - .github/workflows/check-docs.yml
+    branches:
+      - main
+      - 'releases/**'
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    # Skip scheduled runs in forks: GitHub attributes cron runs to the upstream
+    # workflow author, who then gets emailed when a fork's nightly build fails.
+    if: github.repository_owner == 'Breakthrough' || github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          pip install ".[docs,pyav,moviepy]" -r website/requirements.txt
+
+      - name: Check CLI Documentation
+        shell: bash
+        run: |
+          python docs/generate_cli_docs.py
+          if [[ $(git status --porcelain=1 -- docs | wc -l) -ne 0 ]]; then
+            git --no-pager diff -- docs
+            echo 'CLI documentation is out of date: the generated docs do not match the output of docs/generate_cli_docs.py!'
+            echo 'Re-run "python docs/generate_cli_docs.py" and commit the result.'
+            exit 1
+          fi
+
+      - name: Build Sphinx Reference (warnings as errors)
+        shell: bash
+        run: |
+          sphinx-build -W --keep-going -b html docs docs/_build/html
+
+      - name: Build Website (--strict)
+        shell: bash
+        run: |
+          python website/build.py --strict --sphinx-dir docs/_build/html
+
+      - name: Check Responsive Layout & Capture Screenshots
+        shell: bash
+        run: |
+          python website/check_layout.py \
+            --sphinx-dir docs/_build/html \
+            --screenshots "${RUNNER_TEMP}/website-screenshots"
+
+      - name: Upload Website Screenshots
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: website-screenshots
+          path: ${{ runner.temp }}/website-screenshots/
+          if-no-files-found: ignore
+          retention-days: 14
